@@ -1,4 +1,5 @@
 models = require '../models'
+Utils = require './utils'
 User = models.User
 News = models.News
 Crypto = require 'crypto'
@@ -76,6 +77,7 @@ exports.createUser = (req, res)->
         if err
           throw err
         else
+          Utils.fillCandidates(req, res)
           req.session.isSupporter = false
       console.log user
       res.redirect '/'
