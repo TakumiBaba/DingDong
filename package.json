@@ -1,0 +1,23 @@
+{
+  "name": "express-backbone",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Takumi Baba",
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "express": "*",
+    "connect-assets": "*",
+    "mongoose": "*",
+    "socket.io": "*",
+    "jade": "*",
+    "less": "*",
+    "coffee-script": "*",
+    "now": "*",
+    "node-dev": "*",
+    "underscore": "*",
+    "connect-mongo": "*",
+    "fluent-logger": "latest"
+  }
+}

@@ -1,0 +1,553 @@
+@green: #0e867b;
+@pink:  #ef007c;
+
+.rounded-corners (@top-left: 5px, @top-right: 5px, @bottom-left: 0px, @bottom-right: 0px){
+  -webkit-border-radius: @top-left @top-right @bottom-left @bottom-right;
+  -moz-border-radius: @top-left @top-right @bottom-left @bottom-right;
+  -ms-border-radius: @top-left @top-right @bottom-left @bottom-right;
+  -o-border-radius: @top-left @top-right @bottom-left @bottom-right;
+  border-radius: @top-left @top-right @bottom-left @bottom-right;
+}
+
+.box-title{
+  width: 100%;
+  margin-top: -11px;
+  .rounded-corners(20px, 20px, 0px, 0px);
+  h3{
+    margin-left: 20px;
+    color: white;
+    font-weight: 200;
+    font-size: 18px;
+  }
+}
+
+div.pink{
+  background-color: @pink;
+}
+div.green{
+  background-color: @green;
+}
+h2.pink{
+  color: @pink;
+}
+
+div.box-pink{
+  .rounded-corners(20px, 20px, 0px, 0px);
+  border: 1px solid @pink;
+}
+div.box-green{
+  .rounded-corners(20px, 20px, 0px, 0px);
+  border: 1px solid @green;
+}
+
+div.box-inner{
+  margin: 5px;
+  height: 100%;
+  ul.new-matching{
+    list-style: none;
+    li{
+      float: left;
+      img{
+        width:100px;
+        height:120px;
+        margin-left: 5px;
+        &:first{
+          margin-left: 0px;
+        }
+      }
+    }
+  }
+}
+div#sidebar{
+  img.user{
+    width:165px;
+    height:165px;
+  }
+  div.sidebar-menu{
+    // width: 100%;
+    // height: 100%;
+  }
+  ul{
+    li{
+      img{
+
+      }
+      a{
+        background-color: none;
+        border-bottom: 1px solid #dddddd;
+      }
+      &:first-child{
+        a{
+          border-top: 1px solid #dddddd;
+        }
+
+      }
+      a.add-dingdong{
+        border: 0px
+      }
+      a.active{
+        background-color: #ddd;
+      }
+    }
+  }
+}
+div.info{
+  p{
+    margin-left: 10px;
+    border-bottom: 1px dotted @green;
+  }
+}
+
+div#footer{
+  width: 100%;
+  position: relative;
+  ul{
+    // あとでcenterにする
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    list-style: none;
+    li{
+      float: left;
+      margin-left: 5px;
+      padding-left: 5px;
+      border-left: 1px solid black;
+      &:first-child{
+        border-left: none;
+        margin-left: 0px;
+        padding-left: 0px;
+      }
+      a{
+        display: block;
+      }
+    }
+  }
+  p{
+    clear: left;
+    text-align: center;
+  }
+
+}
+small.white{
+  color: white;
+}
+
+div.candidate{
+  margin-left: 10px;
+  float: left;
+  width: 120px;
+  height: 200px;
+  img{
+    margin-left: 5px;
+    width:100px;
+    height:120px;
+  }
+}
+div#user{
+  min-height: 250px;
+}
+
+div.comment{
+  background-color: #CFF;
+  margin-bottom: 1px;
+  img{
+    float: left;
+    margin-top: 1px;
+    width: 50px;
+    height: 50px;
+  }
+  p{
+    display: block;
+    float: left;
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+  div.reply{
+    margin-top: 30px;
+    a.like{
+      float: right;
+    }
+    a.do-comment{
+      float: right;
+    }
+  }
+
+}
+
+ul#profile-image{
+  li{
+    list-style: none;
+    img{
+      width:100px;
+    }
+    img.active{
+      border: 2px solid red;
+    }
+  }
+}
+
+ul.support-users{
+  list-style: none;
+  li{
+    margin-top: 5px;
+    float: left;
+    img{
+      width:100px;
+      height:120px;
+      margin-left: 5px;
+      &:first{
+        margin-left: 0px;
+      }
+    }
+  }
+}
+ul.requests{
+  list-style: none;
+  h4{
+
+  }
+}
+div#header{
+  position: relative;
+
+}
+div#header-nav{
+
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  ul.nav{
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+    float: right;
+
+  }
+}
+ul#my-dong{
+  margin: 0 auto;
+  li{
+    width: 30%;
+    float: left;
+    list-style: none;
+    margin-left: 1px;
+    margin-bottom: 1px;
+    img{
+      width: 100%;
+    }
+  }
+  li.add-dingdong{
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+    height: 50px;
+  }
+
+}
+
+div#yes-area{
+  width: 48%;
+  height: 200px;
+  float:left;
+  background-color: gray;
+  .rounded-corners()
+}
+div#no-area{
+  margin-left: 2%;
+  width: 48%;
+  height: 200px;
+  float:left;
+  background-color: gray;
+  .rounded-corners()
+}
+select.profile-birthday{
+  width: 20%;
+}
+ul.profile-image-list{
+  list-style: none;
+  li{
+
+    float: left;
+    height: 100px;
+    width: 100px;
+    border: 1px solid white;
+    margin-right: 1px;
+    &:first-child{
+      border: 1px solid red;
+    }
+    img{
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+
+div.message{
+  height: 100px;
+  div.tabbable{
+    ul{
+      margin-left: 0px;
+      li{
+        opacity: 0.2;
+      }
+      li.active{
+        opacity: 1;
+      }
+    }
+  }
+
+  div.tab-content{
+    padding-left: 0px;
+    border-top: 1px solid #ddd;
+    position: : relative;
+    width: 100%;
+  }
+}
+div.reply-box{
+  background-color: #f2f2f2;
+  width: 100%;
+  height: 100px;
+  margin-left: 0px;
+  position: fixed;
+  bottom: 0px;
+}
+
+div#message-box{
+  height: 100%;
+  width: 70%;
+  float: left;
+}
+div#user-list{
+  height: 100%;
+  width: 30%;
+  float: left;
+  ul{
+    list-style: none;
+    li{
+      img{
+        height: 50px;
+        float: left;
+      }
+      p{
+        float: left;
+      }
+    }
+  }
+}
+
+.thumbnail-template{
+  li{
+    margin-left: 10px;
+    margin-bottom: 10px;
+    width: 150px;
+    height: 200px;
+    float: left;
+    a{
+      display: block;
+      text-align: center;
+    }
+    img{
+      margin: 0 auto;
+      display: block;
+      height: 120px;
+    }
+    span{
+      text-align: center;
+    }
+    button{
+
+    }
+  }
+}
+ul.matching-thumbnail{
+  list-style: none;
+  .thumbnail-template()
+}
+
+ul.like-thumbnail{
+  list-style: none;
+  .thumbnail-template()
+}
+ul.request-thumbnail{
+ list-style: none;
+  .thumbnail-template()
+}
+
+ul.scrollable{
+  max-height: 230px;
+  margin-right: 20px;
+  overflow: scroll;
+}
+
+ul.talks{
+  div.container{
+    padding-bottom: 30px;
+    border-bottom: 1px dotted #ddd;
+    margin-bottom: 60px;
+  }
+}
+
+a.to-user{
+  display: block;
+  text-align: center;
+  img{
+    height: 150px;
+  }
+  span{
+    display: block;
+    clear: both;
+  }
+}
+ul.comment-list{
+  list-style: none;
+  li{
+    background-color: #f1f2f6;
+    margin-bottom: 10px;
+  }
+}
+
+span.dotted-divider{
+  display: block;
+  width: 100%;
+  border-bottom: 1px dotted #ddd;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+ul.supporter-information{
+  list-style: none;
+}
+
+div.supporter-message-input{
+  width: 90%;
+  min-height: 200px;
+  textarea{
+    resize: none;
+    width: 100%;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+  }
+  button{
+    margin-top: 0px;
+    padding-top: 0px;
+  }
+}
+
+div#introduction-modal{
+  width: 90%;
+  left: 5%;
+  margin: 0 auto;
+  h3{
+    text-align: center;
+  }
+}
+
+div.introduction-left-box{
+  width: 49%;
+  height: 400px;
+  float: left;
+  border-right: 1px dotted #ddd;
+}
+
+div.introduction-right-box{
+  width:49%;
+  float: left;
+  height: 400px;
+  margin-left: 3px;
+}
+ul.user-list{
+  height: 100%;
+  width: 25%;
+  margin: 0;
+  float: left;
+  list-style: none;
+  overflow: scroll;
+  li{
+    margin-bottom: 3px;
+    img{
+      opacity: 0.5;
+      display: block;
+      margin: 0 auto;
+      text-align: center;
+      height: 15%;
+      border-bottom: 1px dotted #ddd;
+      padding-bottom: 10px;
+    }
+  }
+  li.active{
+    img{
+      opacity: 1;
+    }
+
+  }
+}
+div.modal-footer{
+  button.ok{
+    display: block;
+    width: 80%;
+    float: left;
+  }
+  button.cancel{
+    display: block;
+    width: 18%;
+
+  }
+}
+
+div.intro-profile{
+  width: 70%;
+  float: left;
+  height: 100%;
+  img{
+    height: 100px;
+    width: 100px;
+  }
+}
+
+div.message-page{
+  height: 100%;
+  div.message-user-list{
+    height: 100%;
+    ul.user-list{
+      width: 10%;
+      // min-height: 400px;
+      height: 100%;
+      display: block;
+    }
+  }
+
+  div.message-list{
+    float: left;
+    width: 85%;
+    li{
+      display: block;
+      min-height: 70px;
+    }
+  }
+  div.message-post{
+    float: left;
+    width: 80%;
+
+    textarea{
+      margin-top: 50px;
+      width: 90%;
+    }
+    button{
+
+    }
+  }
+}
+div#main{
+  height: 100%;
+}
+div.row1{
+  min-height: 210px;
+}
+div.row2{
+  min-height: 420px;
+}
+
+i[class^="icon-"]{
+  background-image: url("../image/glyphicons-halflings.png")
+}

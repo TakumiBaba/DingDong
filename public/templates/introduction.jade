@@ -1,0 +1,24 @@
+div#introduction-modal.modal.hide.fade(tabindex='1', role='dialogaria-labelledby="introduction-modal", aria-hidden="true"')
+  div.modal-header
+    button.close(type="button", data-dismiss="modal", aria-hidden="true") x
+    h3#introduction-modal-label 友人を紹介する
+  div.modal-body
+    div.introduction-left-box
+      ul.user-list
+      div.intro-profile
+        div.intro-profile-head.media
+          a.pull-left
+            img.media-object(src="/")
+          h3
+        div.media-body
+    div.introduction-right-box
+      ul.user-list
+      div.intro-profile
+        div.intro-profile-head.media
+          a.pull-left
+            img.media-object(src="/")
+          h3
+        div.media-body
+  div.modal-footer
+    button.ok.btn.btn-large.btn-success 紹介する
+    button.cancel.pull-right.btn-large.btn.btn-danger(aria-hidden"true", data-dismiss="modal") 戻る

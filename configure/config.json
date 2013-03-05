@@ -1,0 +1,3 @@
+{
+  "dbpath": "mongodb://localhost/express_station"
+}

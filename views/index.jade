@@ -1,0 +1,218 @@
+extends layout
+block head
+  != css('bootstrap')
+  != css('style')
+  != js('libs/jquery-1.8.2.min')
+  != js('libs/underscore.min')
+  != js('libs/backbone.min')
+  != js('libs/bootstrap.min')
+  != js('libs/require')
+  != js('route')
+  != js('model/user')
+  != js('collection/user')
+  != js('views/matching')
+  != js('views/index')
+  != js('views/basic')
+  != js('views/message')
+  != js('views/like')
+  != js('views/talk')
+  != js('views/userpage')
+  != js('views/request')
+  != js('views/profile')
+  != js('views/setting')
+  != js('views/signup')
+  script(src='//connect.facebook.net/en_US/all.js')
+  script(data-main='js/route', src='js/libs/require.js')
+block content
+  div#wrapper.container
+    div#header.row
+      div#logo.span4
+        h1: a(href="/#/"): img(src='/image/logo.gif', alt="Ding-Dong")
+      div#header-nav.span8
+        ul.nav.nav-pills
+    div#contents.row
+      div#sidebar.span3
+        a
+          img.user.img-circle(src="")
+          h4.pink
+        div.sidebar-menu
+        //- img(src="./image/banner3.png", style="width:100%")
+        //- div
+        //-   ul#my-dong
+      div#main.span9
+    div#footer
+      ul
+        li: a() プライバシーポリシー
+        li: a() 利用規約
+        li: a() お問い合わせ
+      p Copyright (c) Ding-Dong All Rights Reserved.
+  script(type="text/template", id="wrapper-template")
+    div#header.row
+    div#contents.row
+      div#sidebar
+      div#main.span9
+    div#footer
+  script(type="text/template", id="header-template")
+    div#logo.span4
+      h1: a(href="/#/"): img(src='/image/logo.gif', alt="Ding-Dong")
+    div#header-nav.span8
+      ul.nav.nav-tabs
+        <%= li %>
+  script(type="text/template", id="header-li-normal-template")
+    - if(isSupporter == true)
+      li: a(href="/#/signup")婚活を始める
+    li.dropdown
+      a.dropdown-toggle(data-toggle='dropdown') 友達の応援に行く！
+        b.caret
+      ul.dropdown-menu
+        li: a(href="#") 友達を紹介する
+        li.divider
+        <%= li %>
+    - if(isSupporter == true)
+      li: a(href="/#/profile") プロフィール編集
+      li: a(href="/#/settings") お相手設定
+    li: a(href="/#/help")  ヘルプ
+  script(type="text/template", id="header-li-userpage-template")
+    li: a(href="/#/")マイページに戻る
+    li: a(href="/#/help")  ヘルプ
+  script(type="text/template", id="header-li-supporter-template")
+    - if(isSupporter == true)
+      li: a(href="/#/signup")婚活を始める
+    li: a(href="/#/usage")  使い方
+    li: a(href="/#/help")  ヘルプ
+  script(type="text/template", id="sidebar-template")
+    - if (isSupporter == false)
+        ul#menu.nav.nav-list
+          li: a(href="/#/matching"): h5 マッチング情報
+          li: a(href="/#/message"): h5 メッセージ
+          li: a(href="/#/like"): h5 いいねリスト
+          li: a(href="/#/talk"): h5 応援団トーク
+        ul.nav.nav-list
+          li.nav-header: h5 応援団メンバー
+            a.pull-right.add-dingdong() 応援団を増やす
+          li.follower
+            div
+              ul#my-dong
+  script(type='text/template', id="sidebar-userpage-template")
+    button.like.btn.btn-success.btn-block.btn-large いいね！
+    button.message.btn.btn-primary.btn-block.btn-large メッセージを送信する
+    button.introduction.message.btn.btn-primary.btn-block.btn-large 友達に紹介する
+  script(type='text/template', id="sidebar-supporter-template")
+    ul.nav.nav-list
+      li: a(href="/#/matching"): h5 マッチング情報
+      li: a(href="/#/like"): h5 いいねリスト
+      li: a(href="/#/talk"): h5 応援団トーク
+    button.introduction.message.btn.btn-primary.btn-block.btn-large 友達に紹介する
+  script(type="text/template", id="box-template")
+    div.box-title.green
+      h3 <%= title %>
+        small.white <%= subTitle %>
+    div.info.box-inner.container
+  script(type="text/template", id="pink-box-template")
+    div.box-title.pink
+      h3 <%= title %>
+        small.white <%= subTitle %>
+    div.info.box-inner.container
+  script(type="text/template", id="matching-thumbnail-template")
+    div.thumbnail
+      a
+        img
+        h5 <%= name %>さん
+      button.normal.btn-block.btn.btn-primary いいね！
+  script(type="text/template", id="matching-thumbnail-supporterpage-template")
+    div.thumbnail
+      a
+        img
+        h5 <%= name %>さん
+      button.supporter.btn-block.btn.btn-primary いいね！
+  script(type="text/template", id="like-each-thumbnail-template")
+    div.thumbnail
+      a.to-user
+        img
+        span <%= name %>
+      button.btn-block.btn.btn-success メッセージ送信
+      a.to-talk: span 応援トークをする
+  script(type="text/template", id="like-you-thumbnail-template")
+    div.thumbnail
+      a.to-user
+        img
+        span <%= name %>
+      button.btn-block.btn.btn-success いいね！
+      a.to-talk: span 応援トークをする
+  script(type="text/template", id="like-me-thumbnail-template")
+    div.thumbnail
+      a.to-user
+        img
+        span <%= name %>
+      button.btn-block.btn.btn-danger いいね取り消し
+      a.to-talk: span 応援トークをする
+  script(type="text/template", id="alert-template")
+    div.alert.alert-success
+      h4 <%= title%>
+      <%= text %>
+  script(type="text/template", id="talk-thumbnail-template")
+    a.to-user
+      img
+      span <%= name %>
+  script(type="text/template", id="comment-template")
+    div.media
+      img.media-object.pull-left
+      div.media-body
+        h6.media-heading <%= name %>
+        <%= text %>
+      a: span.media-footer.pull-right いいね!
+  script(type="text/template", id="no-comment-template")
+    div#no-comment.media
+      div.media-body
+        h4 コメントがありません。
+  script(type="text/template", id="supporter-message-template")
+    li.media
+      a.pull-left(href="#")
+        img.media-object
+      div.media-body
+        <%= text %>
+  script(type="text/template", id="no-supporter-message-template")
+    div.media-body
+      h4 コメントがまだありません！
+
+  script(type="text/template", id="signup-template")
+    div.box.box-green.navbar
+      div.box-title.green
+        h3 <%= title %>
+          small.white <%= subTitle %>
+      div.info.box-inner.container
+        form.form-horizontal(action='./signup', method='POST')
+          div.control-group
+            label.control-label(for='name') 名前
+            div.controls
+              input(type='text',name='name', id='name', required)
+          div.control-group
+            label.control-label(for='gender') 性別
+            div.controls
+              label.radio.inline
+                input(type='radio',name='male', id='gender_male', value='male')
+                男
+              label.radio.inline
+                input(type='radio',name='female', id='gender_female', value='female')
+                女
+          div.control-group
+            label.control-label(for='age') 年齢
+            div.controls
+              input(type='number',name='age', id='age', required)
+          div.control-group
+            label.control-label(for='range_of_age_min') 相手の希望年齢
+            div.controls
+              input.span2(type='number', name='range_of_age_min', id='range_of_age_min', required)
+              span.help-inline から
+              input.span2(type='number', name='range_of_age_max', id='range_of_age_max', required)
+              span.help-inline まで
+          div.control-group
+            label.control-label(for='profile_message') メッセージ
+            div.controls
+              textarea.span5(rows='3', name='profile_message',id='profile_message', required)
+          input(type='hidden', name='id', id='id')
+          input(type='hidden', name='username', id='username')
+          div.control-group
+            div.controls
+              button.btn.btn-primary(type='submit') 登録する
+              button.btn(type='button') キャンセル

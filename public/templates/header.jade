@@ -1,0 +1,17 @@
+- if(isSupporter == true)
+  li: a(href="/#/signup")婚活を始める
+li.dropdown
+  a.dropdown-toggle(data-toggle='dropdown') 友達の応援に行く！
+    b.caret
+  ul.dropdown-menu
+    li: a.introduction 友達を紹介する
+    li.divider
+    - for f in following
+      li
+        a(href="/#/user/#{f.id}")
+          img(src="#{f.profile_image_urls[0]}", style="height: 30px;")
+          | #{f.name}
+- if(isSupporter == false)
+  li: a(href="/#/profile") プロフィール編集
+  li: a(href="/#/settings") 設定
+li: a(href="/#/help")  ヘルプ

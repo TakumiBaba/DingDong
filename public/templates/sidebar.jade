@@ -1,0 +1,22 @@
+- if (isMe == true)
+  ul#menu.nav.nav-list
+    li: a(href="/#/matching"): h5 マッチング情報
+    li: a(href="/#/message"): h5 メッセージ
+    li: a(href="/#/like"): h5 いいねリスト
+    li: a(href="/#/talk"): h5 応援団トーク
+- else if (isCandidate == true)
+  button.like.btn.btn-success.btn-block.btn-large いいね！
+  button.message.btn.btn-primary.btn-block.btn-large メッセージを送信する
+  button.introduction.message.btn.btn-primary.btn-block.btn-large 友達に紹介する
+- else if (isSupporter == true)
+  ul.nav.nav-list
+    li: a(href="/#/matching"): h5 マッチング情報
+    li: a(href="/#/like"): h5 いいねリスト
+    li: a(href="/#/talk"): h5 応援団トーク
+  button.introduction.message.btn.btn-primary.btn-block.btn-large 友達に紹介する
+
+ul#follow.nav.nav-list
+  li.nav-header: h5 応援団メンバー
+  li.follow
+    div
+      ul#my-dong
