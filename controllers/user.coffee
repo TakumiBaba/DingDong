@@ -262,10 +262,16 @@ exports.updateSettings = (req, res)->
 
 exports.fetchUserProfileImageUrl = (req, res)->
   user = req.params.user_id
+  console.log '----'
+  console.log user
   User.findOne({id: user}).exec (err, person)->
     if err
       throw err
-    res.redirect person.profile_image_urls[0]
+    else
+      if person is null or person is undefined
+        res.send 'undefined'
+      else
+        res.redirect person.profile_image_urls[0]
 
 exports.createFollow = (req, res)->
   from = req.params.from

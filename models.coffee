@@ -182,6 +182,7 @@ UserSchema = new Schema
     type: Boolean
   candidates:
     type: [CandidateSchema]
+    default: []
   following:
     type: [{type: ObjectId, ref: "User"}]
   follower:
