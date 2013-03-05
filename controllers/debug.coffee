@@ -62,6 +62,7 @@ exports.deleteAllData = (req, res)->
       _.each docs, (p)->
         p.remove()
   req.session.destroy()
+  res.send 'reset'
 
 exports.fetchAllUser = (req, res)->
   User.find().exec (err, docs)->

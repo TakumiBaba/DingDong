@@ -77,6 +77,8 @@ exports.createUser = (req, res)->
         if err
           throw err
         else
+          req.params.id = user.id
+          console.log req.params.id
           Utils.fillCandidates(req, res)
           req.session.isSupporter = false
       console.log user

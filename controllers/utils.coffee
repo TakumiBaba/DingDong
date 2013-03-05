@@ -14,7 +14,7 @@ exports.create_dammy_users = (req, res)->
 exports.fillCandidates = (req, res)->
   id = req.params.id
   console.log id
-  User.findOne({id: id}).populate('candidates.user').exec (err, person)->
+  User.findOne({id: id}).exec (err, person)->
     if err
       throw err
     else
