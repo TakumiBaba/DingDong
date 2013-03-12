@@ -4,61 +4,75 @@ require ["jade!templates/profile"], (view)=>
   class App.View.ProfilePage extends Backbone.View
     el: "#main"
     events:
+      "keydown input#like": "addLikeList"
       "click button#submit": "update"
+      "blur div.profile input": "update"
+      "change div.profile select": "update"
+      "change div.profile textarea": "update"
       "click ul.profile-image-list li": "changeProfileImage"
 
     constructor: (attrs, options)->
       super
-      @.profileModel = new App.Model.Profile
+      $(@.el).children().remove()
+      @.model = new App.Model.Profile
         userid: attrs.id
 
       _.bindAll @, "render"
-      @.profileModel.bind 'change', @.render
+      @.model.bind 'change', @.render
 
-      @.profileModel.fetch()
-    render: (model)=>
-      birthday = model.get('birthday')
-      b_year = (new Date(birthday)).getFullYear()
-      template = _.template view({profile: model.attributes})
+    render: ()->
+      $("#main").empty()
+      console.log '----'
+      template = _.template view({profile: @.model.attributes})
       $(@.el).html template()
-
+      $("#profile-image").attr 'src', "/user/#{@.model.userid}/picture"
       FB.api 'me/photos', (res)=>
-        console.log res
+        $(@.el).find('ul.profile-image-list').empty()
         $(@.el).find('ul.profile-image-list').append @.profileImageTemplate("/user/#{App.User.id}/picture")
-        _.each res.data, (album)=>
-          console.log album.images
-          $(@.el).find('ul.profile-image-list').append @.profileImageTemplate(album.images[0].source)
-          # _.each album.images, (image)=>
+        $(@.el).find('ul.profile-image-list li:first').addClass 'active'
 
+        _.each res.data, (album)=>
+          $(@.el).find('ul.profile-image-list').append @.profileImageTemplate(album.images[0].source)
+
+    _render: ()->
+      @.model.fetch()
+      @.render()
 
     profileImageTemplate: (url)->
       return "<li><img src=#{url} /></li>"
 
     changeProfileImage: (e)->
-      console.log $(e.currentTarget).find('img').attr 'src'
+      source =  $(e.currentTarget).find('img').attr 'src'
+      $("ul.profile-image-list li").each ()->
+        $(@).removeClass 'active'
+      $(e.currentTarget).addClass 'active'
+      $("#profile-image").attr 'src', source
+      @.update(e)
+
+    addLikeList: (e)->
+      if e.keyCode is 13
+        console.log $(e.currentTarget).val()
 
     update: (e)->
       e.preventDefault()
       detail =
-        birthday_year: $("#birthday_year").val()
-        birthday_month: $("#birthday_month").val()
-        birthday_day: $("#birthday_day").val()
-        havingMarried: $("#havingMarried").val()
-        havingChild: $("#havingChild").val()
-        wantMarriage: $("#wantMarriage").val()
-        wantChild: $("#wantChild").val()
-        address: $("#address").val()
-        hometown: $("#hometown").val()
-        job: $("#job").val()
+        profile_image: $("#profile-image").attr 'src'
+        martialHistory: parseInt($("#havingMarried").val())+1
+        hasChild: parseInt($("#havingChild").val())+1
+        wantMarriage: parseInt($("#wantMarriage").val())+1
+        wantChild: parseInt($("#wantChild").val())+1
+        address: parseInt($("#address").val())+1
+        hometown: parseInt($("#hometown").val())+1
+        job: parseInt($("#job").val())+1
         income: $("#income").val()
-        bloodType: $("#bloodType").val()
-        education: $("#education").val()
-        shape: $("#shape").val()
+        bloodType: parseInt($("#bloodType").val())+1
+        education: parseInt($("#education").val())+1
+        shape: parseInt($("#shape").val())+1
         height: $("#height").val()
-        drinking: $("#drinking").val()
-        smoking: $("#smoking").val()
+        drinking: parseInt($("#drinking").val())+1
+        smoking: parseInt($("#smoking").val())+1
         hoby: $("#hoby").val()
         like: $("#like").val()
         message: $("#message").val()
-      @.profileModel.save detail
-      window.alert '変更しました。'
+      console.log detail
+      @.model.save detail

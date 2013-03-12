@@ -2,6 +2,7 @@ models = require '../models'
 
 User = models.User
 Candidate = models.Candidate
+News = models.News
 # マッチング系のAPI
 # GET → fetch
 # POST → create
@@ -33,23 +34,58 @@ exports.fetchSystemMatching = (req, res)->
 
 
 exports.update_matching = (req, res)->
-  user = req.params.user_id
-  candidate = req.params.candidate_id
+  user_id = req.params.user_id
+  candidate_id = req.params.candidate_id
   state = req.body.state
   isSystemMatching = if req.body.isSystemMatching is "true" then true else false
-  User.findOne({id: user}).populate('candidates.user').exec (err, person)->
+  User.findOne({id: user_id}).populate('candidates.user').exec (err, person)->
     if err
       throw err
     else
-      candidate = _.find person.candidates, (c)=>
-        return (c.id is candidate)
+      candidate = {}
+      _.each person.candidates, (c, num)=>
+        if c.id is candidate_id
+          candidate = person.candidates[num]
       if candidate?
         candidate.state = state || candidate.state
         candidate.isSystemMatching = isSystemMatching
-        console.log candidate
         person.save (err)->
           if err
             throw err
+        c = undefined
+        c_num = undefined
+        console.log candidate.user.candidates
+        _.each candidate.user.candidates, (u, num)=>
+          console.log u.id, user_id
+          if u.id is user_id
+            c = candidate.user.candidates[num]
+            num = c_num
+        if c?
+          if candidate.state is 1
+            candidate.user.candidates[c_num].state = 2
+          else if candidate.state is 2
+            candidate.user.candidates[c_num].state = 1
+          else if candidate.state is 3
+            candidate.user.candidates[c_num].state = 3
+          else
+            candidate.user.candidates[c_num].state = 1
+        else
+          newCandidate = new Candidate()
+          newCandidate.user = person._id
+          newCandidate.isSystemMatching = false
+          newCandidate.state = 2
+          newCandidate.id = person.id
+          candidate.user.candidates.push newCandidate
+        news = new News()
+        news.from = user_id
+        news.type = "like"
+        news.text = "#{person.name}さんがあなたにいいね！しました。"
+        candidate.user.news.push news
+        candidate.user.save (err)->
+          if err
+            throw err
+          else
+            console.log candidate
         res.json candidate
       else
         res.send 'inai'

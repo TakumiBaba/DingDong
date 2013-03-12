@@ -3,6 +3,7 @@ models = require '../models'
 User = models.User
 MessageList = models.MessageList
 Message = models.Message
+News = models.News
 # メッセージ系のAPI
 # GET → fetch
 # POST → create
@@ -87,5 +88,16 @@ exports.createMessage = (req, res)->
       mList.save (err)->
         if err
           throw err
+
+      news = new News()
+      news.from = to.id
+      news.type = "message"
+      news.text = "#{from.name}さんからメッセージがきました！"
+      to.news.push news
+
+      to.save (err)->
+        if err
+          throw err
+
       res.json mList
 

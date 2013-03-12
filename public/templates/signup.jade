@@ -49,6 +49,11 @@ div.box-green.navbar
         label.control-label(for='profile_message') メッセージ
         div.controls
           textarea.span5(rows='3', name='profile_message',id='profile_message', required)
+      div.control-group
+        label.control-label(for='profile_message') 応援団
+        div.controls
+          button#add-dingdong.btn.btn-success(type='button') Facebookの友達を応援団に招待する
+          ul.pre-supporter-list
       input(type='hidden', name='id', id='id')
       input(type='hidden', name='username', id='username')
       input(type='hidden', name='first_name', id='first_name')

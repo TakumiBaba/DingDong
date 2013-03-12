@@ -31,7 +31,7 @@ exports.create = (req, res)->
       user.name = req.body.name
       user.facebook_id = req.body.userid
       user.id = sha1_hash.digest 'hex'
-      user.profile_image_urls.push "https://graph.facebook.com/#{req.body.userid}/picture"
+      user.profile_image_urls.push "https://graph.facebook.com/#{req.body.userid}/picture?type=large"
       user.isSupporter = true
       user.save (err)->
         if err
@@ -39,7 +39,7 @@ exports.create = (req, res)->
         console.log 'user save success!'
       req.session.name = req.body .name
       req.session.userid = user.id
-      req.session.image = "https://graph.facebook.com/#{req.body.userid}/picture"
+      req.session.image = user.profile_image_urls
       req.session.isSupporter = true
       res.json
         status: 'new'
@@ -63,13 +63,16 @@ exports.createUser = (req, res)->
       user.facebook_id = req.body.id
       user.id = sha1_hash.digest 'hex'
       user.profile.gender = req.body.gender
-      user.profile.age = req.body.age
+      d = new Date("#{req.body.birthday_year}/#{req.body.birthday_month}/#{req.body.birthday_day}")
+      user.profile.birthday = d
+      user.profile.age = Utils.calculateAge(d)
       user.is_married = false
-      user.partner_requirements.age_min = req.body.range_of_age_min
-      user.partner_requirements.age_max = req.body.range_of_age_max
+      user.partner_requirements.ageMin = req.body.range_of_age_min
+      user.partner_requirements.ageMax = req.body.range_of_age_max
       user.profile.message = req.body.profile_message
       user.isSupporter = false
-      user.isFirstLogin = true
+      user.isFirstLogin = false
+      user.inviteFriendsFlag = false
       news = new News()
       news.text = "#{req.body.name}さんがDing Dongを始めました！"
       user.news.push news

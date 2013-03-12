@@ -6,7 +6,7 @@ class App.Collection.News extends Backbone.Collection
   constructor: (attrs, options)->
     super
     @.id = attrs.id
-    @.url = "/news/#{attrs.id}"
+    @.url = "/user/#{attrs.id}/news"
 
 class App.Collection.MatchingList extends Backbone.Collection
   model: App.Model.Matching

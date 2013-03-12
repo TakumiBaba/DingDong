@@ -13,17 +13,19 @@ exports.create_dammy_users = (req, res)->
 
 exports.fillCandidates = (req, res)->
   id = req.params.id
+  console.log 'fill candidates'
   console.log id
   User.findOne({id: id}).exec (err, person)->
     if err
       throw err
     else
+      console.log person
       system = _.filter person.candidates, (c)->
         return (c.state is 0 and c.isSystemMatching is true)
       exclusionList = _.pluck person.candidates, "id"
       gender = person.profile.gender
-      age_min = person.partner_requirements.age_min
-      age_max = person.partner_requirements.age_max
+      age_min = person.partner_requirements.ageMin
+      age_max = person.partner_requirements.ageMax
       if system.length < 20
         num = 20 - system.length
         exclusionList = _.pluck person.candidates, "id"
@@ -82,6 +84,22 @@ exports.create_dammy_user = (i)->
   user.profile.message = "こんばんわ！#{i}世だよ！"
   user.profile_image_urls.push "https://graph.facebook.com/#{user.id}/picture"
   user.isSupporter = false
+  p = user.profile
+  p.birthday = Date.now()
+  p.martialHistory = i%4
+  p.hasChild = i%5
+  p.wantMarriage = i%6
+  p.wantChild = i%6
+  p.address = i%48
+  p.hometown = i%48
+  p.job = i%23
+  p.income = i*100
+  p.height = 160+(i*30)
+  p.education = i%7
+  p.bloodType = i%5
+  p.shape = i%9
+  p.drinking = i%7
+  p.smoking = i%5
   news = new News()
   news.text = "#{i}世さんがDing Dongを始めました！"
   user.news.push news
@@ -90,3 +108,14 @@ exports.create_dammy_user = (i)->
       console.log err
     else
       console.log 'ok'
+
+exports.calculateAge = (b)->
+  d = new Date()
+  today = d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate()
+  birthday = b.getFullYear()*10000+(b.getMonth()+1)*100+b.getDate()
+  return Math.floor((today - birthday)/10000)
+
+exports.updateAge = (req, res)->
+  User.find().where('isSupporter').equals(false).exec (err, persons)->
+    if err
+      throw err

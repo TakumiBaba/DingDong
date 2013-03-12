@@ -1,27 +1,61 @@
 models = require '../models'
 User = models.User
 Talk = models.Talk
+News = models.News
 MessageList = models.MessageList
 
 exports.update_matching = (req, res)->
   from = req.params.from
   to = req.params.to
   state = req.params.state
-  console.log from
+  console.log from, to
   isSystemMatching = if req.params.isSystemMatching is "true" then true else false
   User.findOne({id: from}).populate('candidates.user').exec (err, person)->
     if err
       throw err
     else
-      candidate = _.find person.candidates, (c)=>
-        return (c.id is to)
+      candidate = {}
+      _.each person.candidates, (c, num)=>
+        if c.id is to
+          candidate = person.candidates[num]
       if candidate?
-        candidate.state = state
+        candidate.state = state || candidate.state
         candidate.isSystemMatching = isSystemMatching
-        console.log candidate
         person.save (err)->
           if err
             throw err
+        c = undefined
+        c_num = undefined
+        _.each candidate.user.candidates, (u, num)=>
+          if u.id is from
+            c = candidate.user.candidates[num]
+            c_num = num
+        if c?
+          if candidate.state is 1
+            candidate.user.candidates[c_num].state = 2
+          else if candidate.state is 2
+            candidate.user.candidates[c_num].state = 1
+          else if candidate.state is 3
+            candidate.user.candidates[c_num].state = 3
+          else
+            candidate.user.candidates[c_num].state = 1
+        else
+          newCandidate = new Candidate()
+          newCandidate.user = person._id
+          newCandidate.isSystemMatching = false
+          newCandidate.state = 2
+          newCandidate.id = person.id
+          candidate.user.candidates.push newCandidate
+        news = new News()
+        news.from = from
+        news.type = "like"
+        news.text = "#{person.name}さんがあなたにいいね！しました。"
+        candidate.user.news.push news
+        candidate.user.save (err)->
+          if err
+            throw err
+          else
+            console.log candidate
         res.json candidate
       else
         console.log 'inai'

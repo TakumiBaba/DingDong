@@ -63,10 +63,6 @@ div#sidebar{
     width:165px;
     height:165px;
   }
-  div.sidebar-menu{
-    // width: 100%;
-    // height: 100%;
-  }
   ul{
     li{
       img{
@@ -268,17 +264,17 @@ ul.profile-image-list{
   li{
 
     float: left;
-    height: 100px;
-    width: 100px;
-    border: 1px solid white;
+    height: 50px;
+    width: 50px;
+    border: 3px solid white;
     margin-right: 1px;
-    &:first-child{
-      border: 1px solid red;
-    }
     img{
       width: 100%;
       height: 100%;
     }
+  }
+  li.active{
+    border: 3px solid red;
   }
 }
 
@@ -350,13 +346,11 @@ div#user-list{
     img{
       margin: 0 auto;
       display: block;
-      height: 120px;
+      height: 110px;
+      width: 110px;
     }
     span{
       text-align: center;
-    }
-    button{
-
     }
   }
 }
@@ -404,6 +398,10 @@ ul.comment-list{
   li{
     background-color: #f1f2f6;
     margin-bottom: 10px;
+    img{
+      height: 50px;
+      width: 50px;
+    }
   }
 }
 
@@ -471,12 +469,12 @@ ul.user-list{
       margin: 0 auto;
       text-align: center;
       height: 15%;
-      border-bottom: 1px dotted #ddd;
-      padding-bottom: 10px;
+      margin-bottom: 15px;
     }
   }
   li.active{
     img{
+      border: 3px solid #5987e7;
       opacity: 1;
     }
 
@@ -508,10 +506,11 @@ div.intro-profile{
 div.message-page{
   height: 100%;
   div.message-user-list{
+    float: left;
     height: 100%;
+    width: 10%;
     ul.user-list{
-      width: 10%;
-      // min-height: 400px;
+      width: 100%;
       height: 100%;
       display: block;
     }
@@ -520,9 +519,23 @@ div.message-page{
   div.message-list{
     float: left;
     width: 85%;
+    div.message-header{
+      width: 100%;
+      background-color: #e9eaed;
+      margin-bottom: 1px solid white;
+    }
+    div.message-body{
+      width: 100%;
+      height: 80%;
+      background-color: #e9eaed;
+    }
     li{
       display: block;
       min-height: 70px;
+      img{
+        width: 50px;
+        height: 50px;
+      }
     }
   }
   div.message-post{

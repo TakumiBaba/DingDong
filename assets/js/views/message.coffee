@@ -38,14 +38,18 @@ require ["jade!templates/messagepage"], (view)=>
       console.log model
       li = @.liTemplate(model.get('id'))
       $(@.el).append li
+
     appendAllItem: (collection)->
+      if collection.models.length is 0
+        @.noMessage()
+        return
       _.each collection.models, (model)=>
         @.appendItem model
       $(@.el).find('li:first').addClass 'active'
       one = App.User.id
       two = $(@.el).find('li:first').attr 'id'
       @.detailView.setModel(one, two)
-      # @.render()
+
     changePerson: (e)->
       $(@.el).find('li').each ()->
         $(@).removeClass 'active'
@@ -54,10 +58,9 @@ require ["jade!templates/messagepage"], (view)=>
       two = $(e.currentTarget).attr 'id'
       @.detailView.setModel(one, two)
 
-
     liTemplate: (id, image_url)->
       image_url = "/user/#{id}/picture"
-      return "<li id=#{id}><img class='m_thumbnail' src=#{image_url} /></li>"
+      return "<li id=#{id}><img class='img-rounded m_thumbnail' src=#{image_url} /></li>"
 
   class App.View.MessageDetailView extends Backbone.View
     el: 'ul.messages'
@@ -96,7 +99,7 @@ require ["jade!templates/messagepage"], (view)=>
 
     liTemplate: (id, text)->
       url = "/user/#{id}/picture"
-      return "<li class='hoge'><img class='pull-left' src=#{url} />#{text}</li>"
+      return "<li class='hoge'><img class=' pull-left' src=#{url} />#{text}</li>"
 
   class App.View.MessagePostView extends Backbone.View
     el: 'div.message-post'

@@ -12,6 +12,7 @@ require ["jade!templates/signup"], (signup)=>
     events:
       "click button.register": 'registerClicked'
       "click button.cancel": 'cancelClicked'
+      "click button#add-dingdong": 'inviteFacebookFriends'
 
     render: ()=>
       compiledTemplate = _.template(signup())
@@ -36,3 +37,13 @@ require ["jade!templates/signup"], (signup)=>
 
     cancelClicked: (e)->
       location.href = "/#/"
+
+    inviteFacebookFriends: (e)->
+      FB.ui
+        method: "apprequests"
+        message: "応援に参加してください！"
+        data: App.User.get 'id'
+      , (res)=>
+        console.log res
+        console.log $(@.el).find('ul.pre-supporter-list')
+        $(@.el).find('ul.pre-supporter-list').append '<li>hogefuga</li>'

@@ -51,16 +51,14 @@ class Router extends Backbone.Router
         talk = new App.View.TalkPage
           id: uid
         talk.render()
-      when "request"
-        console.log 'request'
       when "profile"
-        profile = new App.View.ProfilePage
-          id: uid
+        App.Profile._render()
       when "settings"
-        settings = new App.View.SettingsPage
-          id: uid
+        App.Settings._render()
       when "signup"
         signup = new App.View.SignupPage()
+      else
+        location.href = "/#/"
 
 
   you: (id, action)->
@@ -86,6 +84,8 @@ class Router extends Backbone.Router
         talk = new App.View.TalkPage
           id: id
         talk.render()
+      else
+        location.href = "/#/"
 
 window.fbAsyncInit = ()->
   initialize = (id)->
@@ -98,34 +98,42 @@ window.fbAsyncInit = ()->
     App.Sidebar = new App.View.Sidebar
       model: App.User
 
+    App.Profile = new App.View.ProfilePage
+      id: id
+    App.Settings = new App.View.SettingsPage
+      id: id
+
     App.User.fetch()
 
     router = new Router
       id: id
     Backbone.history.start()
 
-    FB.api 'me/apprequests', (res)=>
-      requests = _.filter res.data, (d)=>
-        return d.application.id is "381551511881912"
-      if requests.length > 0
-        App.Header.appendRequests(requests)
+    $.ajax
+      type: "GET"
+      url: "/user/#{App.User.id}/invitefriendsflag"
+      success: (data)->
+        if data is true
+          window.alert("Facebookの友達の中から応援団を選びましょう！")
+          FB.ui
+            method: "apprequests"
+            message: "応援に参加してください！"
+            data: App.User.get 'id'
 
   FB.init
     appId: 381551511881912
     channelUrl: '//localhost:3000/'
     status: true
     cookie: true
-  FB.ui
-    method: "permissions.request"
-    perms: "user_photos, user_about_me, user_relationships"
 
   FB.getLoginStatus (res)=>
-    if res.status is 'not_authorized'
-      FB.login()
-    else if res.status is 'connected'
-      console.log 'connected'
+    if res.status is 'connected'
+      console.log "connected"
     else
       FB.login()
+      FB.ui
+        method: "permissions.request"
+        perms: "user_photos, user_about_me, user_relationships"
   FB.Event.subscribe 'auth.statusChange', (response)=>
     console.log response
     if response.status is 'connected'

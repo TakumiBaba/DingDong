@@ -2,11 +2,13 @@ extends layout
 block head
   != css('bootstrap')
   != css('style')
+  != css('multi-select')
   != js('libs/jquery-1.8.2.min')
   != js('libs/underscore.min')
   != js('libs/backbone.min')
   != js('libs/bootstrap.min')
   != js('libs/require')
+  != js('libs/jquery.multi-select')
   != js('route')
   != js('model/user')
   != js('collection/user')
@@ -36,9 +38,6 @@ block content
           img.user.img-circle(src="")
           h4.pink
         div.sidebar-menu
-        //- img(src="./image/banner3.png", style="width:100%")
-        //- div
-        //-   ul#my-dong
       div#main.span9
     div#footer
       ul

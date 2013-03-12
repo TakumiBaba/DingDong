@@ -74,6 +74,8 @@ UserSchema = new Schema
   username:
     type: String
   profile:
+    image_urls:
+      type: String
     age:
       type: Number
       default: 22
@@ -82,27 +84,27 @@ UserSchema = new Schema
       default: ""
     birthday:
       type: Date
-    havingMarried:
-      type: String
-      default: ""
-    havingChild:
-      type: String
-      default: ""
+    martialHistory:
+      type: Number
+      default: 1
+    hasChild:
+      type: Number
+      default: 1
     wantMarriage:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     wantChild:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     address:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     hometown:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     job:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     income:
       type: Number
       default: 0
@@ -110,20 +112,20 @@ UserSchema = new Schema
       type: Number
       default: 0
     education:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     bloodType:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     shape:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     drinking:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     smoking:
-      type: String
-      default: ""
+      type: Number
+      default: 1
     hoby:
       type: String
       default: ""
@@ -133,50 +135,50 @@ UserSchema = new Schema
       type: String
       default: ""
   partner_requirements:
-    age_min:
+    ageMin:
       type: Number
-    age_max:
+    ageMax:
       type: Number
-    martial_history:
-      type: Number
+    martialHistory:
+      type: [Number]
     hasChild:
-      type: Number
+      type: [Number]
       default: 0
     wantMarriage:
-      type: Number
+      type: [Number]
       default: 0
     wantChild:
-      type: Number
+      type: [Number]
       default: 0
     address:
-      type: Number
+      type: [Number]
       default: 0
     hometown:
-      type: Number
+      type: [Number]
       default: 0
     job:
-      type: Number
+      type: [Number]
       default: 0
     income:
       type: Number
       default: 0
     education:
-      type: Number
+      type: [Number]
       default: 0
     bloodtype:
-      type: Number
+      type: [Number]
       default: 0
     height:
       type: Number
       default: 0
     shape:
-      type: Number
+      type: [Number]
       default: 0
     drinking:
-      type: Number
+      type: [Number]
       default: 0
     smoking:
-      type: Number
+      type: [Number]
       default: 0
   is_married:
     type: Boolean
@@ -185,8 +187,10 @@ UserSchema = new Schema
     default: []
   following:
     type: [{type: ObjectId, ref: "User"}]
+    default: []
   follower:
     type: [{type: ObjectId, ref: "User"}]
+    default: []
   profile_image_urls:
     type: [String]
   profile_message:
@@ -204,6 +208,9 @@ UserSchema = new Schema
   supporter_message:
     type: [SupporterMessageSchema]
     default: []
+  inviteFriendsFlag:
+    type: Boolean
+    default: false
 
 # サポーター
 SupporterSchema = new Schema
@@ -229,6 +236,10 @@ NewsSchema = new Schema
   created_at:
     type: Date
     default: new Date()
+  from:
+    type: String
+  type:
+    type: String
   text:
     type: String
 

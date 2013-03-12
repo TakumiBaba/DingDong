@@ -38,6 +38,7 @@ class App.Model.Profile extends Backbone.Model
   urlRoot: '/profile'
   constructor: (attrs, options)->
     super
+    @.userid = attrs.userid
     @.urlRoot = "/user/#{attrs.userid}/profile"
 
 class App.Model.Settings extends Backbone.Model

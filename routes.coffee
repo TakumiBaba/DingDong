@@ -18,11 +18,18 @@ exports.setup = (app)->
       User.findOne({id: req.session.userid}).exec (err, person)->
         if err
           throw err
+        isFirstLogin = if person.isFirstLogin is true then true else false
+        if isFirstLogin
+          person.isFirstLogin = false
+          # person.save (err)->
+          #   if err
+          #     throw err
         res.render 'index'
           title: "Ding Dong"
           profile_image: person.profile_image_urls[0]
           name: person.name
           isSupporter: person.isSupporter
+          isFirstLogin: isFirstLogin
   app.post '/', (req, res)->
     if req.session.userid? is false
       res.redirect '/login'
@@ -41,12 +48,14 @@ exports.setup = (app)->
   app.post '/session/create', controllers['session'].create
   app.post '/signup', controllers['session'].createUser
 
+  app.get '/user/:user_id/invitefriendsflag', controllers['user'].fetchInfiteFriendsFlag
+
   app.get '/user/:user_id/matching/', controllers['matching'].fetch_matching
   app.put '/user/:user_id/matching/:candidate_id/state', controllers['matching'].update_matching
   app.get '/user/:user_id/picture', controllers['user'].fetchUserProfileImageUrl
 
   app.get '/user/:id', controllers['user'].fetch_user
-  app.get '/user/:id/news', controllers['user'].fetch_news
+  app.get '/user/:id/news', controllers['user'].fetchNews
   app.get '/user/:id/like', controllers['user'].fetch_like
   # app.get '/user/:id/like', controllers['user'].fetchLike
   app.get '/talk/:id', controllers['user'].fetch_talk
@@ -69,6 +78,8 @@ exports.setup = (app)->
   app.post '/user/:from/:to/message', controllers['message'].createMessage
 
   app.post '/follow/:from/:to', controllers['user'].createFollow
+
+  app.get '/user/:user_id/cestimate', controllers['user'].fetchCandidateOfNumbers
 
   #debug
   app.get '/debug/:id/candidate/create', controllers['utils'].fillCandidates

@@ -20,6 +20,12 @@ require ["jade!templates/header", "jade!templates/introduction", "jade!templates
       ul.html headerView({isSupporter: isSupporter, following: @.model.get('person').following})
       $(@.el).find('.dropdown-toggle').dropdown()
 
+      FB.api 'me/apprequests', (res)=>
+        requests = _.filter res.data, (d)=>
+          return d.application.id is "381551511881912"
+        if requests.length > 0
+          App.Header.appendRequests(requests)
+
     introduction: (e)->
       if $('#introduction-modal').length is 0
         introduction = new App.View.Introduction()
@@ -35,7 +41,6 @@ require ["jade!templates/header", "jade!templates/introduction", "jade!templates
       $("#app-requests").after "<ul id='app-requests-list' class='dropdown-menu'></ul>"
       _.each data, (d)=>
         console.log d.data
-        # id = JSON.parse(d.data).id
         id = d.data
         name = d.from.name
         li = @.requestTemplate(id, name)
@@ -179,7 +184,6 @@ require ["jade!templates/header", "jade!templates/introduction", "jade!templates
       @.model.bind 'change', @.render
 
     events:
-      "click ul#menu li a": "onActive"
       "click button#add-dingdong": "sendAppRequest"
       "click button.like": 'like'
       "click a.user-facebook-page": "toFacebookPage"
@@ -190,10 +194,11 @@ require ["jade!templates/header", "jade!templates/introduction", "jade!templates
       option =
         name: person.name
         follow: person.follower
+        isSupporter: person.isSupporter
       template = @.template(type, option)
       position = if person.isSupporter is true then "応援団" else "婚活者"
       $(@.el).find("div.sidebar-menu").html(template)
-      $(@.el).find("img.user").attr 'src', person.profile_image_urls[0]
+      $(@.el).find("img.user").attr 'src', "/user/#{person.id}/picture"
       if type is "candidate" or type is "supporter"
         $(@.el).find("a:first").attr 'href', "https://facebook.com/#{person.facebook_id}"
       else
@@ -214,12 +219,6 @@ require ["jade!templates/header", "jade!templates/introduction", "jade!templates
           $(c).attr 'href', "/#/user/#{person.id}/#{action}"
 
     template: (type, option)->
-      # if type is 'candidate'
-      #   compiledTemplate = _.template($("#sidebar-userpage-template").html())
-      # else if type is 'supporter'
-      #   compiledTemplate = _.template($("#sidebar-supporter-template").html())
-      # else
-      #   compiledTemplate = _.template($("#sidebar-template").html())
       isCandidate = isSupporter = isMe = false
       if type is 'candidate'
         isCandidate = true
@@ -227,6 +226,9 @@ require ["jade!templates/header", "jade!templates/introduction", "jade!templates
         isSupporter = true
       else
         isMe = true
+        if option.isSupporter is true
+          isMe = false
+
       compiledTemplate = _.template sidebarView({isMe: isMe, isCandidate: isCandidate, isSupporter: isSupporter})
       return compiledTemplate(option)
 
@@ -235,18 +237,23 @@ require ["jade!templates/header", "jade!templates/introduction", "jade!templates
       # return "<li><a href=#{url}><img src=#{source} /><div><p>#{name}さん</p></div></a></li>"
 
     like: (e)->
-      console.log e
+      user_id = App.User.id
+      c_id = App.Sidebar.model.get('id')
+      c_ids = _.pluck App.User.get('person').candidates, "id"
+      # ユーザの候補者の中に、この人がいれば、stateを見て新しいstateを付与
+      # いなかったら、stateを2にして送る。
+      console.log App.User
+      # $.ajax
+      #   type: "PUT"
+      #   url: "/user/#{user_id}/matching/#{c_id}/1"
 
     message: (e)->
+      # API叩いて、locationを変化させる
+      # 友達に紹介する機能も。
       console.log e
 
     toFacebookPage: (e)->
       console.log e
-
-    onActive: (e)->
-      $(@.el).find("ul#menu li a").each ()->
-        $(@).removeClass 'active'
-      $(e.currentTarget).addClass 'active'
 
     sendAppRequest: (e)->
       # exclude list の対応とかをする。

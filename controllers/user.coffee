@@ -1,8 +1,13 @@
 models = require '../models'
+Utils = require './utils'
 User = models.User
 Talk = models.Talk
+News = models.News
 Comment = models.Comment
 SupporterMessage = models.SupporterMessage
+
+logger = require 'fluent-logger'
+logger.configure 'mongo', {host: 'localhost', port:24224}
 # ユーザデータ取得系のAPI
 # GET → fetch
 # POST → create
@@ -37,15 +42,15 @@ exports.fetch_user = (req, res)->
         type: type
         person: person
 
-exports.fetch_news = (req, res)->
+exports.fetchNews = (req, res)->
   id = req.params.id
   User.findOne({id: id}).exec (err, person)->
     if err
       throw err
     else
-      news = person.news
+      news = person.news.reverse().splice 0, 5
+      console.log news
       res.send news
-      res.end()
 
 exports.fetch_like = (req, res)->
   id = req.params.id
@@ -107,9 +112,21 @@ exports.create_comment = (req, res)->
           comment.text = text
           comment.count = 0
           talk.comments.push comment
+
+          news = new News()
+          news.from = person.id
+          news.type = "comment"
+          news.text = "#{person.name}さんが、#{talk.candidate.name}さんの応援団トークにコメントしました"
+          console.log 'talk comment, news'
+          console.log news
+          talk.user.news.push news
+          talk.user.save (err)->
+            if err
+              throw err
           talk.save (err)->
             if err
               throw err
+
           res.json
             comment: comment
             name: person.name
@@ -144,6 +161,11 @@ exports.create_talk = (req, res)->
             throw err
             res.json
               status: 'missing'
+        news = new News()
+        news.from = ""
+        news.type = "talk"
+        news.text = "#{candidate.name}さんについての応援団トークが作られました"
+        user.news.push news
         user.save (err)->
           if err
             throw err
@@ -202,28 +224,27 @@ exports.updateProfile = (req, res)->
   User.findOne({id: user}).exec (err, person)->
     if err
       throw err
-    p = person.profile
-    p.address = profileParams.address
-    p.age = profileParams.age
-    date = new Date("#{profileParams.birthday_year}/#{profileParams.birthday_month}/#{profileParams.birthday_day}")
-    p.birthday = date
-    p.bloodType = profileParams.bloodType
-    p.drinking = profileParams.drinking
-    p.education = profileParams.education
-    p.gender = profileParams.gender
-    p.havingChild = profileParams.havingChild
-    p.havingMarried = profileParams.havingMarried
-    p.height = profileParams.height
-    p.hoby = profileParams.hoby
-    p.hometown = profileParams.hometown
-    p.income = profileParams.income
-    p.job = profileParams.job
-    p.like = profileParams.like
-    p.message = profileParams.message
-    p.shape = profileParams.shape
-    p.smoking = profileParams.smoking
-    p.wantChild = profileParams.wantChild
-    p.wantMarriage = profileParams.wantMarriage
+    console.log profileParams
+    console.log '--------'
+    person.profile_image_urls = profileParams.profile_image
+    person.profile.address = profileParams.address
+    person.profile.bloodType = profileParams.bloodType
+    person.profile.drinking = profileParams.drinking
+    person.profile.education = profileParams.education
+    person.profile.gender = profileParams.gender
+    person.profile.hasChild = profileParams.hasChild
+    person.profile.martialHistory = profileParams.martialHistory
+    person.profile.height = profileParams.height
+    person.profile.hoby = profileParams.hoby
+    person.profile.hometown = profileParams.hometown
+    person.profile.income = profileParams.income
+    person.profile.job = profileParams.job
+    person.profile.like = profileParams.like
+    person.profile.message = profileParams.message
+    person.profile.shape = profileParams.shape
+    person.profile.smoking = profileParams.smoking
+    person.profile.wantChild = profileParams.wantChild
+    person.profile.wantMarriage = profileParams.wantMarriage
     person.save (err)->
       if err
         throw err
@@ -241,7 +262,6 @@ exports.fetchSettings = (req, res)->
   User.findOne({id: user}).exec (err, person)->
     if err
       throw err
-    console.log person.partner_requirements
     res.send person.partner_requirements
 
 exports.updateSettings = (req, res)->
@@ -252,8 +272,14 @@ exports.updateSettings = (req, res)->
     if err
       throw err
     p_requirements = person.partner_requirements
-    _.each requirements, (v, k)=>
-      p_requirements[k] = v
+    _.each requirements, (value, key)=>
+      console.log key, value
+      if value? and typeof(value) is 'object' and value.length > 1
+        p_requirements[key] = []
+        _.each value, (v)=>
+          p_requirements[key].push parseInt v
+      else
+        p_requirements[key] = parseInt value
     person.save (err)->
       if err
         throw err
@@ -262,14 +288,15 @@ exports.updateSettings = (req, res)->
 
 exports.fetchUserProfileImageUrl = (req, res)->
   user = req.params.user_id
-  console.log '----'
-  console.log user
   User.findOne({id: user}).exec (err, person)->
     if err
       throw err
     else
+      console.log "urls", person
       if person is null or person is undefined
         res.send 'undefined'
+      else if person.profile_image_urls? is false
+        res.redirect "http://graph.facebook.com/#{person.facebook_id}/picture?type=large"
       else
         res.redirect person.profile_image_urls[0]
 
@@ -294,3 +321,61 @@ exports.createFollow = (req, res)->
         if err
           throw err
       res.json 'ok'
+
+# fetchInviteFriendsFlag の間違い？
+exports.fetchInfiteFriendsFlag = (req, res)->
+  User.findOne({id: req.params.user_id}).exec (err, person)->
+    if err
+      throw err
+    flag = person.inviteFriendsFlag
+    res.send flag
+    if flag is true
+      flag = false
+    person.save (err)->
+      if err
+        throw err
+
+exports.fetchCandidateOfNumbers = (req, res)->
+  userid = req.body.id
+  console.log req.query
+  User.findOne({id: req.params.user_id}).exec (err, person)->
+    if err
+      throw err
+    q = req.query
+    p = person.partner_requirements
+    ageMin = if q.age is "0" then p.ageMin else 0
+    ageMax = if q.age is "0" then p.ageMax else 100
+    martialHistory = if !_.include(p.martialHistory, 0) then (if q.martialHistory is "0" then p.martialHistory else [0..3] )else [0..3]
+    hasChild = if !_.include(p.hasChild, 0) then (if q.hasChild is "0" then p.hasChild else [0..4] )else [0..4]
+    wantMarriage = if !_.include(p.wantMarriage, 0) then (if q.wantMarriage is "0" then p.wantMarriage else [0..5] )else [0..5]
+    wantChild = if !_.include(p.wantChild, 0) then (if q.wantChild is "0" then p.wantChild else [0..5] )else [0..5]
+    address = if !_.include(p.address, 0) then (if q.address is "0" then p.address else [0..47] )else [0..47]
+    hometown = if !_.include(p.hometown, 0) then (if q.hometown is "0" then p.hometown else [0..47] )else [0..47]
+    job = if !_.include(p.job, 0) then (if q.job is "0" then p.job else [0..22] )else [0..22]
+    income = if q.income is "0" then p.income else 0
+    education = if !_.include(p.education, 0) then (if q.education is "0" then p.education else [0..47] )else [0..47]
+    bloodtype = if !_.include(p.bloodtype, 0) then (if q.bloodtype is "0" then p.bloodtype else [0..5] )else [0..5]
+    height = if q.height is "0" then p.height else 0
+    shape = if !_.include(p.shape, 0) then (if q.shape is "0" then p.shape else [0..8] )else [0..8]
+    drinking = if !_.include(p.drinking, 0) then (if q.drinking is "0" then p.drinking else [0..6] )else [0..6]
+    smoking = if !_.include(p.smoking, 0) then (if q.smoking is "0" then p.smoking else [0..4] )else [0..4]
+
+    User.count({
+      'profile.gender': {$ne: person.profile.gender}
+      'profile.age': {$gte: ageMin, $lte: ageMax}
+      'profile.martialHistory': {$in: martialHistory}
+      'profile.hasChild': {$in: hasChild}
+      'profile.wantMarriage': {$in:wantMarriage}
+      'profile.wantChild': {$in: wantChild}
+      'profile.address': {$in: address}
+      'profile.hometown': {$in: hometown}
+      'profile.job': {$in: job}
+      'profile.income': {$gte: income}
+      'profile.education': {$in: education}
+      'profile.bloodType': {$in: bloodtype}
+      'profile.shape': {$in: shape}
+      'profile.drinking': {$in: drinking}
+      'profile.smoking': {$in: smoking}
+    }).exec (err, count)->
+      res.json count
+      logger.emit "cestimate", req.query

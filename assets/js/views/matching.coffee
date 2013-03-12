@@ -35,7 +35,10 @@ require ["jade!templates/matchingpage"], (view)=>
     tagName: 'li'
 
     events:
-      "click button": "stateChange"
+      "click button.like": "stateChange"
+      "click button.close": "toggleRemoveFlag"
+      "mouseenter div.thumbnail": "focusOn"
+      "mouseleave div.thumbnail": "focusOut"
 
     constructor: (attrs)->
       super
@@ -47,8 +50,14 @@ require ["jade!templates/matchingpage"], (view)=>
       compiledTemplate = _.template(@.template(options))
       $(@.el).html(compiledTemplate())
       if location.href.match(/\/user\//)
-        $(@.el).find('button').removeClass 'btn-primary'
-        $(@.el).find('button').addClass 'btn-success'
+        $(@.el).find('button').removeClass('btn-primary').addClass('btn-success')
+
+    toggleRemoveFlag: (e)->
+      if $(e.currentTarget).parent().find('button.like').hasClass 'btn-primary'
+        $(e.currentTarget).parent().find('button.like').removeClass('btn-primary').addClass('btn-danger').html("消します！")
+      else
+        $(e.currentTarget).parent().find('button.like').removeClass('btn-danger').addClass('btn-primary').html("いいね！")
+
     stateChange: (e)->
       data = {}
       if location.href.match(/\/user\//)
@@ -57,6 +66,12 @@ require ["jade!templates/matchingpage"], (view)=>
           you: @.id
           state: 0
           isSystemMatching: false
+      else if $(e.currentTarget).hasClass 'btn-danger'
+        data =
+          me: @.me
+          you: @.id
+          state: 9
+          isSystemMatching: true
       else
         data =
           me: @.me
@@ -72,7 +87,16 @@ require ["jade!templates/matchingpage"], (view)=>
           console.log data
           window.alert('追加しました')
 
+    focusOn: (e)->
+      $(e.currentTarget).find('button.close').removeClass 'hide'
+
+    focusOut: (e)->
+      $(e.currentTarget).find('button.close').addClass 'hide'
+
     template: (attrs)->
-      return "<div class='thumbnail'><a href='/#/user/#{attrs.id}'><img src=#{attrs.image_url} /><h5>#{attrs.name}</h5></a><button class='btn-block btn btn-primary'>いいね！</button>"
+      if location.href.match(/\/user\//)
+        return "<div class='thumbnail'><a href='/#/user/#{attrs.id}'><img src=#{attrs.image_url} /><h5>#{attrs.name}</h5></a><button class='like btn-block btn btn-primary'>いいね！</button></div>"
+      else
+        return "<div class='thumbnail'><button class='close hide'>&times;</button><a href='/#/user/#{attrs.id}'><img src=#{attrs.image_url} /><h5>#{attrs.name}</h5></a><button class='like btn-block btn btn-primary'>いいね！</button></div>"
 
 

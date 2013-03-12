@@ -4,44 +4,48 @@ require ["jade!templates/settings"], (view)=>
   class App.View.SettingsPage extends Backbone.View
     el: "#main"
     events:
-      "click button#submit": "update"
+      "blur div.settings input": "update"
+      "change div.settings select": "update"
+
     constructor: (attrs, options)->
       super
-      @.settingsModel = new App.Model.Settings
+      @.model = new App.Model.Settings
         userid: attrs.id
-      console.log 'hogefuga'
       _.bindAll @, "render"
-      @.settingsModel.bind 'change', @.render
+      @.model.bind 'change', @.render
 
-      @.settingsModel.fetch()
-    render: (model)=>
-      console.log model
-      template = _.template view({partner_requirements: model.attributes})
+    render: ()=>
+      model = @.model.attributes
+      template = _.template view({partner_requirements: model})
       $(@.el).html template()
-      console.log $("#age_min")
-      # $("#age_min").val model.attributes.age_min
-      # $("#age_max").val model.attributes.age_max
+
+    _render: ()->
+      console.log @.model.fetch()
+      @.render()
 
     update: (e)->
-      console.log e
       e.preventDefault()
       detail =
-        age_min: $("#range_of_age_min").val()
-        age_max: $("#range_of_age_max").val()
-        martial_history: $("#martial_history").val()
-        hasChild: $("#hasChild").val()
-        wantMarriage: $("#wantMarriage").val()
-        wantChild: $("#wantChild").val()
-        address: $("#address").val()
-        hometown: $("#hometown").val()
-        job: $("#job").val()
+        ageMin: $("#ageMin").val()
+        ageMax: $("#ageMax").val()
+        martialHistory: @.toInt $("#martial_history").val()
+        hasChild: @.toInt $("#hasChild").val()
+        wantMarriage: @.toInt $("#wantMarriage").val()
+        wantChild: @.toInt $("#wantChild").val()
+        address: @.toInt $("#address").val()
+        hometown: @.toInt $("#hometown").val()
+        job: @.toInt $("#job").val()
         income: $("#income").val()
-        bloodType: $("#bloodType").val()
-        education: $("#education").val()
+        bloodType: @.toInt $("#bloodType").val()
+        education: @.toInt $("#education").val()
         height: $("#height").val()
-        shape: $("#shape").val()
-        drinking: $("#drinking").val()
-        smoking: $("#smoking").val()
-      @.settingsModel.save detail, (e)->
-        console.log e
-        window.alert("変更しました！");
+        shape: @.toInt $("#shape").val()
+        drinking: @.toInt $("#drinking").val()
+        smoking: @.toInt $("#smoking").val()
+      console.log detail
+      @.model.save detail
+
+    toInt: (tmpArray)->
+      array = _.map tmpArray, (v)->
+        return parseInt v
+      return array

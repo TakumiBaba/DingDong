@@ -42,11 +42,15 @@ require ["jade!templates/likelistpage"], (likeView)=>
     tagName: 'li'
 
     events:
-      "click button": "buttonClick"
+      "click button.like-action": "buttonClick"
+      "click button.close": "toggleRemoveFlag"
       "click a.to-talk": "createTalk"
+      "mouseenter div.thumbnail": "focus"
+      "mouseleave div.thumbnail": "focus"
 
     constructor: (attrs)->
       super
+      @.removeFlag = false
       @.me = attrs.me
       @.state = attrs.state
       @.isSystemMatching = attrs.isSystemMatching
@@ -63,11 +67,18 @@ require ["jade!templates/likelistpage"], (likeView)=>
       $(@.el).html _.template(@.template(options))()
 
     template: (attrs)->
-      return "<div class='thumbnail'><a href='/#/#{attrs.id}' class='to-user'><img src=#{attrs.image_url} /><span>#{attrs.name}</span></a><button class='btn btn-danger btn-block'>#{attrs.text}</button><a class='to-talk'><span>応援トークをする</span></a></div>"
+      if location.href.match(/\/user\//)
+        return "<div class='thumbnail'><a href='/#/user/#{attrs.id}' class='to-user'><img src=#{attrs.image_url} /><h5>#{attrs.name}</h5></a><button class='like-action btn-block btn btn-primary'>#{attrs.text}</button><a class='to-talk'><span>応援トークをする</span></a></div>"
+      else
+        return "<div class='thumbnail'><button class='close hide'>&times;</button><a href='/#/user/#{attrs.id}' class='to-user'><img src=#{attrs.image_url} /><h5>#{attrs.name}</h5></a><button class='like-action btn-block btn btn-primary'>#{attrs.text}</button><a class='to-talk'><span>応援トークをする</span></a></div>"
+      # return "<div class='thumbnail'><a href='/#/user/#{attrs.id}' class='to-user'><img src=#{attrs.image_url} /><span>#{attrs.name}</span></a><button class='btn btn-danger btn-block'>#{attrs.text}</button><a class='to-talk'><span>応援トークをする</span></a></div>"
 
     buttonClick: (e)->
       console.log @.state
-      if @.state is 1
+      if @.removeFlag is true
+        nextState = 9
+        @.changeState(nextState)
+      else if @.state is 1
         nextState = 0
         @.changeState(nextState)
       else if @.state is 2
@@ -75,6 +86,29 @@ require ["jade!templates/likelistpage"], (likeView)=>
         @.changeState(nextState)
       else if @.state is 3
         console.log 'each'
+
+    toggleRemoveFlag: (e)->
+      button = $(e.currentTarget).parent().find('button.like-action')
+      if button.hasClass 'btn-primary'
+        button.removeClass('btn-primary').addClass('btn-danger').html("消します！")
+        setTimeout ()->
+          switch @.state
+            when 1 then text = "いいね取り消し"
+            when 2 then text = "いいね！"
+            when 3 then text = "メッセージ送信"
+          button.removeClass('btn-danger').addClass('btn-primary').html(text)
+        , 10000
+      else
+        switch @.state
+          when 1 then text = "いいね取り消し"
+          when 2 then text = "いいね！"
+          when 3 then text = "メッセージ送信"
+        button.removeClass('btn-danger').addClass('btn-primary').html(text)
+
+    focus: (e)->
+      @.removeFlag = if @.removeFlag is false then true else false
+      $(e.currentTarget).find('button.close').toggleClass 'hide'
+
     changeState: (nextState)->
       $.ajax
         type: "PUT"
