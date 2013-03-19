@@ -33,8 +33,9 @@ class Router extends Backbone.Router
       App.Sidebar.render()
     switch action
       when undefined
-        index = new App.View.IndexPage()
-        index.render()
+        matching = new App.View.MatchingPage
+          id: uid
+        matching.render()
       when "matching"
         matching = new App.View.MatchingPage
           id: uid

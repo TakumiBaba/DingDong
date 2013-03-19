@@ -3,6 +3,8 @@ User = models.User
 Talk = models.Talk
 News = models.News
 MessageList = models.MessageList
+SupporterMessage = models.SupporterMessage
+
 
 exports.update_matching = (req, res)->
   from = req.params.from
@@ -118,3 +120,25 @@ exports.deleteMessages = (req, res)->
       list.remove()
 
   res.send 'ok'
+
+exports.createSupporterMessage = (req, res)->
+  console.log 'create supporter message'
+  supporter = req.params.supporter
+  user = req.params.userid
+  text = req.params.text
+  User.find({id: {$in: [user, supporter]}}).exec (err, persons)->
+    if err
+      throw err
+    else
+      user = _.find persons, (p)=>
+        return (p.id is user)
+      supporter = _.find persons, (p)=>
+        return (p.id is supporter)
+      supporterMessage = new SupporterMessage()
+      supporterMessage.supporter = supporter._id
+      supporterMessage.message = text
+      user.supporter_message.push supporterMessage
+      user.save (err)->
+        if err
+          throw err
+      res.json supporterMessage

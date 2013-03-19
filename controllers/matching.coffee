@@ -97,6 +97,14 @@ exports.fetchFollowingUsers = (req, res)->
       throw err
     res.send person.following
 
+exports.fetchFollowers = (req, res)->
+  user = req.params.user_id
+  User.findOne({id: user}).populate('follower').exec (err, person)->
+    if err
+      throw err
+    console.log person
+    res.send person.follower
+
 exports.fetchFriendsIntroduction = (req, res)->
   user = req.params.user_id
   User.findOne({id: user}).populate('following').exec (err, person)->

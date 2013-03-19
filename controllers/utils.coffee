@@ -5,6 +5,7 @@ Comment = models.Comment
 Candidate = models.Candidate
 News = models.News
 Crypto = require 'crypto'
+Config = require '../configure/config.json'
 
 exports.create_dammy_users = (req, res)->
   for i in [1..500]
@@ -24,8 +25,8 @@ exports.fillCandidates = (req, res)->
         return (c.state is 0 and c.isSystemMatching is true)
       exclusionList = _.pluck person.candidates, "id"
       gender = person.profile.gender
-      age_min = person.partner_requirements.ageMin
-      age_max = person.partner_requirements.ageMax
+      age_min = person.partner_requirements.ageMin || 22
+      age_max = person.partner_requirements.ageMax || 60
       if system.length < 20
         num = 20 - system.length
         exclusionList = _.pluck person.candidates, "id"
@@ -119,3 +120,6 @@ exports.updateAge = (req, res)->
   User.find().where('isSupporter').equals(false).exec (err, persons)->
     if err
       throw err
+
+exports.newsNotification = (req, res)->
+  console.log 'notification'

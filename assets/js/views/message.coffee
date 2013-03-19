@@ -87,6 +87,7 @@ require ["jade!templates/messagepage"], (view)=>
       $(@.el).append li
     appendAllItem: (collection)->
       $(@.el).empty()
+      $("h5.user-name").html "hoge"
       _.each collection.models, (model)=>
         @.appendItem model
 

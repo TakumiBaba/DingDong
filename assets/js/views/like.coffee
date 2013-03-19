@@ -127,4 +127,4 @@ require ["jade!templates/likelistpage"], (likeView)=>
         data:
           candidate_id: @.id
         success: (data)=>
-          window.alert('応援団とこの人についてトークしましょう！')
+          window.alert("「応援トーク」ページで応援団とこの人について相談しましょう")

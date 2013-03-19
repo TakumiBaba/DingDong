@@ -198,7 +198,10 @@ exports.createSupporterMessage = (req, res)->
 
 exports.fetchSupporterMessage = (req, res)->
   user = req.params.user_id
-  User.findOne({id: user}).populate('supporter_message.supporter').exec (err, person)->
+  console.log user
+  # User.find({id: user}).populate("supporter_message.supporter").exec (err, person)->
+  User.findOne({id: user}).exec (err, person)->
+    console.log person
     if err
       throw err
     else
@@ -292,7 +295,6 @@ exports.fetchUserProfileImageUrl = (req, res)->
     if err
       throw err
     else
-      console.log "urls", person
       if person is null or person is undefined
         res.send 'undefined'
       else if person.profile_image_urls? is false

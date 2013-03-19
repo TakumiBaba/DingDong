@@ -26,13 +26,13 @@ require ["jade!templates/profile"], (view)=>
       template = _.template view({profile: @.model.attributes})
       $(@.el).html template()
       $("#profile-image").attr 'src', "/user/#{@.model.userid}/picture"
-      FB.api 'me/photos', (res)=>
-        $(@.el).find('ul.profile-image-list').empty()
-        $(@.el).find('ul.profile-image-list').append @.profileImageTemplate("/user/#{App.User.id}/picture")
-        $(@.el).find('ul.profile-image-list li:first').addClass 'active'
+      # FB.api 'me/photos', (res)=>
+      #   $(@.el).find('ul.profile-image-list').empty()
+      #   $(@.el).find('ul.profile-image-list').append @.profileImageTemplate("/user/#{App.User.id}/picture")
+      #   $(@.el).find('ul.profile-image-list li:first').addClass 'active'
 
-        _.each res.data, (album)=>
-          $(@.el).find('ul.profile-image-list').append @.profileImageTemplate(album.images[0].source)
+      #   _.each res.data, (album)=>
+      #     $(@.el).find('ul.profile-image-list').append @.profileImageTemplate(album.images[0].source)
 
     _render: ()->
       @.model.fetch()
@@ -51,8 +51,8 @@ require ["jade!templates/profile"], (view)=>
 
     addLikeList: (e)->
       if e.keyCode is 13
-        console.log $(e.currentTarget).val()
-
+        text = $(e.currentTarget).val()
+        label = $("<span>").addClass('label label-info')
     update: (e)->
       e.preventDefault()
       detail =

@@ -35,6 +35,7 @@ require ["jade!templates/matchingpage"], (view)=>
     tagName: 'li'
 
     events:
+      "click a": "popover"
       "click button.like": "stateChange"
       "click button.close": "toggleRemoveFlag"
       "mouseenter div.thumbnail": "focusOn"
@@ -85,7 +86,7 @@ require ["jade!templates/matchingpage"], (view)=>
         success:(data)=>
           $(@.el).remove()
           console.log data
-          window.alert('追加しました')
+          window.alert('いいねリストに追加しました！')
 
     focusOn: (e)->
       $(e.currentTarget).find('button.close').removeClass 'hide'
@@ -99,4 +100,14 @@ require ["jade!templates/matchingpage"], (view)=>
       else
         return "<div class='thumbnail'><button class='close hide'>&times;</button><a href='/#/user/#{attrs.id}'><img src=#{attrs.image_url} /><h5>#{attrs.name}</h5></a><button class='like btn-block btn btn-primary'>いいね！</button></div>"
 
+    popover: (e)->
+      console.log e
+      e.preventDefault()
+      console.log e.currentTarget.hash
+      # users = new App.Collection.MatchingList
+      #   userid: @.me
+      id = e.currentTarget.hash.replace("#/user/", "")
+      userpage = new App.View.UserPage
+        target: id
+      userpage.render()
 

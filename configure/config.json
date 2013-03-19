@@ -1,3 +1,5 @@
 {
-  "dbpath": "mongodb://localhost/express_station"
+  "dbpath": "mongodb://localhost/express_station",
+  "appID": "381551511881912",
+  "appSecretKey": "9da6d32dc52a4370fce032a86ab6ceda"
 }

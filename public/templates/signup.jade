@@ -34,26 +34,6 @@ div.box-green.navbar
                 option #{i}
             - }
           日
-      //- div.control-group
-      //-   label.control-label(for='age') 年齢
-      //-   div.controls
-      //-     input(type='number',name='age', id='age', required)
-      div.control-group
-        label.control-label(for='range_of_age_min') 相手の希望年齢
-        div.controls
-          input.span2(type='number', name='range_of_age_min', id='range_of_age_min', required)
-          span.help-inline から
-          input.span2(type='number', name='range_of_age_max', id='range_of_age_max', required)
-          span.help-inline まで
-      div.control-group
-        label.control-label(for='profile_message') メッセージ
-        div.controls
-          textarea.span5(rows='3', name='profile_message',id='profile_message', required)
-      div.control-group
-        label.control-label(for='profile_message') 応援団
-        div.controls
-          button#add-dingdong.btn.btn-success(type='button') Facebookの友達を応援団に招待する
-          ul.pre-supporter-list
       input(type='hidden', name='id', id='id')
       input(type='hidden', name='username', id='username')
       input(type='hidden', name='first_name', id='first_name')

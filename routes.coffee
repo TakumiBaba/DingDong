@@ -19,17 +19,19 @@ exports.setup = (app)->
         if err
           throw err
         isFirstLogin = if person.isFirstLogin is true then true else false
-        if isFirstLogin
-          person.isFirstLogin = false
-          # person.save (err)->
-          #   if err
-          #     throw err
-        res.render 'index'
+        res.render 'index',{
           title: "Ding Dong"
           profile_image: person.profile_image_urls[0]
           name: person.name
           isSupporter: person.isSupporter
           isFirstLogin: isFirstLogin
+        }
+        # if isFirstLogin
+        #   person.isFirstLogin = false
+          # person.save (err)->
+          #   if err
+          #     throw err
+
   app.post '/', (req, res)->
     if req.session.userid? is false
       res.redirect '/login'
@@ -38,11 +40,12 @@ exports.setup = (app)->
         if err
           throw err
         else
-          res.render 'index'
+          res.render 'index', {
             title: "Ding Dong"
             profile_image: person.profile_image_urls[0]
             name: person.name
             isSupporter: person.isSupporter
+          }
 
   app.get '/login', controllers['session'].login
   app.post '/session/create', controllers['session'].create
@@ -71,6 +74,7 @@ exports.setup = (app)->
   # app.get  '/user/:id/supportermessage/:mid', controllers['user'].fetchSupporterMessage
   app.get '/introduction/:user_id', controllers['matching'].fetchFriendsIntroduction
   app.get '/user/:user_id/following', controllers['matching'].fetchFollowingUsers
+  app.get '/user/:user_id/follower', controllers['matching'].fetchFollowers
   app.post '/user/:one/:two/supportermatching', controllers['matching'].changeSupporterMatching
 
   app.get '/user/:one/:two/messages', controllers['message'].fetchMessage
@@ -91,4 +95,5 @@ exports.setup = (app)->
   app.get '/debug/create/dammy', controllers['utils'].create_dammy_users
   app.get '/debug/user/:from/:to/message/:text', controllers['message'].createMessage
   app.get '/debug/messages/reset', controllers['debug'].deleteMessages
+  app.get '/debug/user/:supporter/:userid/supportermessage/:text', controllers['debug'].createSupporterMessage
 

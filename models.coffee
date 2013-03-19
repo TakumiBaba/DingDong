@@ -207,7 +207,6 @@ UserSchema = new Schema
   message_list: [{type: ObjectId, ref: "MessageList"}]
   supporter_message:
     type: [SupporterMessageSchema]
-    default: []
   inviteFriendsFlag:
     type: Boolean
     default: false
@@ -225,7 +224,8 @@ SupporterSchema = new Schema
 
 SupporterMessageSchema = new Schema
   supporter:
-    type: ObjectId, ref: "User"
+    type: ObjectId
+    ref: "User"
   message:
     type: String
   count:
