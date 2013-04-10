@@ -62,3 +62,7 @@ class App.Model.Message extends Backbone.Model
 
   setParams: (one, two)->
     @.urlRoot = "/user/#{one}/#{two}/message"
+
+class App.Model.Comment extends Backbone.Model
+  constructor: ()->
+    super

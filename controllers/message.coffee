@@ -14,6 +14,7 @@ exports.fetchMessagingUserList = (req, res)->
   User.findOne({id: user}).exec (err, person)=>
     if err
       throw err
+    # ここでよくわかんないけどエラー出てる？？
     MessageList.find({_id: {$in: person.message_list}}).populate('user', 'id').exec (err, lists)=>
       if err
         throw err
@@ -44,6 +45,9 @@ exports.fetchMessage = (req, res)->
           throw err
         console.log 'hoge'
         console.log mList
+        # TODO 以下の.name一文は消す
+        _.each mList.contents, (c, num)=>
+          mList.contents[num].name = "takumi"
         res.send mList.contents
     else
       res.send 'error'
@@ -68,6 +72,7 @@ exports.createMessage = (req, res)->
         console.log 'mlist exist'
         message.text = text
         message.from = from.id
+        message.name = from.name
       else
         console.log 'create mlist '
         mList = new MessageList()
@@ -75,6 +80,7 @@ exports.createMessage = (req, res)->
         mList.user.push to._id
         message.text = text
         message.from = from.id
+        message.name = from.name
         from.message_list.push mList
         to.message_list.push mList
         from.save (err)->
@@ -99,5 +105,5 @@ exports.createMessage = (req, res)->
         if err
           throw err
 
-      res.json mList
+      res.send message
 

@@ -23,10 +23,11 @@ class Router extends Backbone.Router
   routes:
     "": "me"
     ":action": "me"
+    ":action/:id": "me"
     "user/:id": "you"
     "user/:id/:action": "you"
 
-  me: (action)->
+  me: (action, id)->
     uid = App.User.get('id')
     if App.Sidebar.model.get('id') isnt uid
       App.Sidebar.setModel App.User
@@ -58,9 +59,28 @@ class Router extends Backbone.Router
         App.Settings._render()
       when "signup"
         signup = new App.View.SignupPage()
+      when "u"
+        userpage = new App.View.UserPage
+          id: id
+        console.log 'user page that you see'
+      when "me"
+        console.log 'my page that others see'
+      when "supporter"
+        supporter = new App.View.SupporterPage()
+        supporter.render()
+      when "invite"
+        FB.ui
+          method: "apprequests"
+          message: "応援に参加してください！"
+          data: App.User.get('id')
       else
         location.href = "/#/"
-
+    _action  = action
+    $(App.Sidebar.el).find('ul.nav li').each ()->
+      if $(@).hasClass 'active'
+        $(@).removeClass 'active'
+      if $(@).hasClass _action
+        $(@).addClass 'active'
 
   you: (id, action)->
     if App.Sidebar.model.get('id') isnt id
@@ -93,8 +113,6 @@ window.fbAsyncInit = ()->
     App = window.App
     App.User = new App.Model.User
       id: id
-    App.Header = new App.View.Header
-      model: App.User
 
     App.Sidebar = new App.View.Sidebar
       model: App.User
@@ -110,6 +128,9 @@ window.fbAsyncInit = ()->
       id: id
     Backbone.history.start()
 
+
+    # ここでフォロワー/フォローの設定をする
+
     $.ajax
       type: "GET"
       url: "/user/#{App.User.id}/invitefriendsflag"
@@ -120,7 +141,6 @@ window.fbAsyncInit = ()->
             method: "apprequests"
             message: "応援に参加してください！"
             data: App.User.get 'id'
-
   FB.init
     appId: 381551511881912
     channelUrl: '//localhost:3000/'
@@ -145,7 +165,8 @@ window.fbAsyncInit = ()->
           url: "/session/create"
           data:
             userid: res.id
-            name:   res.name
+            name:    res.name
+            accessToken: response.authResponse.accessToken
           success: (data)=>
             console.log data
             initialize(data.id)

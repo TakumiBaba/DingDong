@@ -6,6 +6,7 @@ Candidate = models.Candidate
 News = models.News
 Crypto = require 'crypto'
 Config = require '../configure/config.json'
+http   = require 'http'
 
 exports.create_dammy_users = (req, res)->
   for i in [1..500]
@@ -121,5 +122,29 @@ exports.updateAge = (req, res)->
     if err
       throw err
 
-exports.newsNotification = (req, res)->
+exports.newsNotification = (req, res, id, text)->
   console.log 'notification'
+  id = id || "baba.takumi"
+  text = text || "hogefuga"
+  query = "?href=''&template=#{text}&access_token=#{req.session.accessToken}"
+  options =
+    host: "https://graph.facebook.com"
+    port: 80
+    path: "/#{id}/notification"
+    method: "POST"
+
+  req = http.request options, (res)->
+    res.setEncoding 'utf8'
+    res.on 'data', (chunk)->
+      console.log chunk
+  req.on 'error', (e)->
+    console.log e
+
+  # 寝る前のメモ
+  # { [Error: getaddrinfo ENOENT] code: 'ENOTFOUND', errno: 'ENOTFOUND', syscall: 'getaddrinfo' }
+  # こんなエラーが帰ってきた。
+  # アドレス情報が間違ってそう。
+
+  req.write 'data\n'
+  req.end()
+

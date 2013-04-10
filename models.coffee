@@ -258,7 +258,9 @@ MessageSchema = new Schema
     type: String
   from:
     type: String
-    # type: Schema.Types.ObjectId, ref: 'User'
+  name:
+    type: String
+    default: "takumi"
 
 UserSchema.statics.findOrCreateByName = (name, callback)->
   this.findOne('name': name, 'name created_at', (error, docs) =>

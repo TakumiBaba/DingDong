@@ -40,6 +40,9 @@ exports.setup = (app)->
         if err
           throw err
         else
+          req.session.access_token = req.body.access_token
+          console.log 'req.body!!!!'
+          console.log req.body
           res.render 'index', {
             title: "Ding Dong"
             profile_image: person.profile_image_urls[0]
@@ -56,6 +59,7 @@ exports.setup = (app)->
   app.get '/user/:user_id/matching/', controllers['matching'].fetch_matching
   app.put '/user/:user_id/matching/:candidate_id/state', controllers['matching'].update_matching
   app.get '/user/:user_id/picture', controllers['user'].fetchUserProfileImageUrl
+  app.get '/user/:user_id/picture/:ut', controllers['user'].fetchUserProfileImageUrl
 
   app.get '/user/:id', controllers['user'].fetch_user
   app.get '/user/:id/news', controllers['user'].fetchNews
@@ -67,7 +71,7 @@ exports.setup = (app)->
   app.post '/user/:user_id/profileimage', controllers['user'].fetchProfileImage
   app.get '/user/:user_id/settings', controllers['user'].fetchSettings
   app.post '/user/:user_id/settings', controllers['user'].updateSettings
-  app.post '/talk/:talk_id/comment/', controllers['user'].create_comment
+  app.post '/talk/:talk_id/comment', controllers['user'].create_comment
   app.post '/user/:user_id/talk/', controllers['user'].create_talk
   app.post '/user/:user_id/supportermessage', controllers['user'].createSupporterMessage
   app.get  '/user/:user_id/supportermessage', controllers['user'].fetchSupporterMessage

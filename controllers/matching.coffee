@@ -20,12 +20,8 @@ exports.fetch_matching = (req, res)->
         return (c.state is 0)
       system = _.filter candidates, (c, num)->
         return (c.isSystemMatching is true)
-      if system.length > 9
-        system.splice 9
       supporter = _.filter candidates, (c, num)->
         return (c.isSystemMatching is false)
-      if supporter.length > 9
-        supporter.splice 9
       list = system.concat supporter
       res.send list
 

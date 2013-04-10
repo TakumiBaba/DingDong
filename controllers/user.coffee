@@ -117,6 +117,8 @@ exports.create_comment = (req, res)->
           news.from = person.id
           news.type = "comment"
           news.text = "#{person.name}さんが、#{talk.candidate.name}さんの応援団トークにコメントしました"
+
+          Utils.newsNotification(req, res)
           console.log 'talk comment, news'
           console.log news
           talk.user.news.push news
@@ -126,11 +128,10 @@ exports.create_comment = (req, res)->
           talk.save (err)->
             if err
               throw err
-
           res.json
-            comment: comment
-            name: person.name
-            profile_image: person.profile_image_urls[0]
+            user: person
+            text: comment.text
+            created_at: comment.created_at
 
 exports.create_talk = (req, res)->
   candidate_id = req.body.candidate_id

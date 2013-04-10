@@ -1,152 +1,282 @@
 App = window.App
 
 class App.View.UserPage extends Backbone.View
-  el: "div#userpage"
-
-  events:
-    "click button.close": "close"
-    "click div#userpage-sidebar li": "changeUser"
-    "click button.matching-list": "changeMatchigListView"
-
-  constructor: (attrs)->
-    _.bindAll @, "appendAllItem"
-    @.target = attrs.target
-    @.collection = new App.Collection.MatchingList
-      userid: App.User.id
-    @.collection.bind 'reset', @.appendAllItem
-    @.collection.fetch()
-
-  render: ()=>
-    html = window.JST['userpage/modal']({isSupporter: true})
-    if $('body').find("div#userpage").length > 0
-      console.log 'already exist'
-    else
-      $('body').append html
-    $("#userpage").modal()
-
-  close: ()->
-    console.log 'close'
-    $('body').remove("#userpage")
-
-  changeUser: (e)=>
-    $('ul.userpage-sidebar-ul').find('li').each ()->
-      if $(@).hasClass('active')
-        $(@).removeClass 'active'
-    $(e.currentTarget).addClass 'active'
-    @.target = e.currentTarget.id
-    @.isSupporter = false
-    user = _.find @.collection.models, (model)->
-      return model.id is e.currentTarget.id
-    console.log 'candidate'
-    console.log App.User.get('person')
-    if ( _.find App.User.get('person').following, (f)=>
-          return f.id is @.target)
-      $(@.el).find('div.supporter-menu').show(0)
-    else
-      $(@.el).find('div.supporter-menu').hide(0)
-    name = user.get('user').name
-    gender = if user.get('user').profile.gender is 'male' then "男性" else "女性"
-    age = user.get('user').profile.age
-    birthday = new Date(user.get('user').profile.birthday)
-    $(@.el).find('div.profile h4').html(name)
-    $(@.el).find('div.profile h5').html("#{gender}　#{age}歳　#{birthday.getFullYear()}年#{birthday.getMonth()+1}月#{birthday.getDay()}日生まれ")
-    $(@.el).find('div.profile img.profile-image').attr 'src', user.get('user').profile_image_urls[0]
-    @.setFollowers(user)
-    @.setDetailProfile(user.get('user').profile)
-
-  setDetailProfile: (profile)->
-    $(@.el).find('table.table tbody').html window.JST['userpage/detailProfile'](profile);
-
-  setFollowers: (user)->
-    id = user.get('user').id
-    followers = new App.View.UserPageFollowerList
-      id: id
-    # followers.fetch()
-    # ここでBindさせたりする。
-    # めんどくさいから朝起きたらやる
-    # console.log followers
-    # _.each followers.models, (follower)->
-    #   console.log follower.get('name')
-
-  setFollowerMessage: ()->
-    console.log '応援団メッセージ'
-
-  changeMatchigListView: (e)->
-    console.log 'matching list view'
-    matchingListView = new App.View.UserPageMatchingList()
-    matchingListView.render()
-
-  # 2カラムにして、応援団メッセージと一覧を統合しても良いかも。
-  # メッセージのある人は応援団一覧でも上位に持ってくる。
-  #
-
-  appendItem: (model)->
-    options =
-      source: model.get('user').profile_image_urls[0]
-      name: model.get('user').name
-      id: model.get('user').id
-    li = window.JST['userpage/footerUser'](options)
-    $(@.el).find('ul.userpage-sidebar-ul').append li
-
-  appendAllItem: (collection)->
-    $(@.el).find('ul.userpage-sidebar-ul').empty()
-    _.each collection.models, (model)=>
-      @.appendItem model
-    _changeUser = @.changeUser
-    $(@.el).find('ul.userpage-sidebar-ul li').each (num)->
-      $(@).bind 'click', _changeUser
-    $(@.el).find("li##{@.target}").click()
-
-class App.View.UserPageFollowerList extends Backbone.View
-  el: "ul.follower-list"
+  el: "div#main"
 
   constructor: (attrs)->
     super
-    $(@.el).empty()
-    _.bindAll @, "render", "getMessages"
-    # ここのモデルを、SupporterMessageに変更する
-    @.messages = new App.Model.SupporterMessage
-      userid: attrs.id
-    @.followers = new App.Collection.Followers
+    @.model = new App.Model.User
       id: attrs.id
-    @.followers.bind 'reset', @.render
-    @.messages.bind 'change', @.getMessages
-    @.messages.fetch()
 
-  getMessages: (model)->
-    @.messages = []
-    _.each model.attributes, (message, num)=>
-      @.messages[num] =
-        id: message.supporter
-        text: message.message
-    @.followers.fetch()
+    _.bindAll @, "render", "setMatchingList"
+    @.model.bind 'change', @.render
 
-  render: (collection)->
+    profileView = new App.View.UserPageProfile
+      model: @.model
+    matchinglistView = new App.View.UserPageMatchingList
+      id: attrs.id
+    likelistView = new App.View.UserPageLikeList
+      id: attrs.id
+    matchinglistView = new App.View.UserPageMatchingList
+      id: attrs.id
+
+
+    @.model.fetch()
+
+    @.matchinglist = new App.Collection.MatchingList
+      userid: @.model.id
+    @.matchinglist.bind 'reset', @.setMatchingList
+
+  render: (model)->
+    console.log 'render'
+    user = model.get('person')
+    gender = if user.profile.gender is 'male' then "男性" else "女性"
+    b = new Date(user.profile.birthday)
+    options =
+      image_source: user.profile_image_urls[0]
+      name: user.name
+      gender_birthday: "#{gender} #{user.profile.age}歳　#{b.getFullYear()}年#{b.getMonth()-1}月#{b.getDay()}日生まれ"
+      follower: user.follower
+      profile: user.profile
+    html = window.JST['userpage/page'](options)
+    $(@.el).empty()
+    $(@.el).html html
+    @.matchinglist.fetch()
+
+  setMatchingList: (collection)->
     console.log collection
-    _.each collection.models, (model)=>
-      message = _.find @.messages, (message)->
-        return message.id is model.get('_id')
-      options =
-        facebook_url: "https://facebook.com/#{model.get('facebook_id')}"
-        source: "/user/#{model.get('id')}/picture"
-        name: model.get('name')
-        text: if message? then message.text else ""
-      if options.text is ""
-        html = window.JST['userpage/follower'](options)
-      else
-        html = window.JST['userpage/followerWithMessage'](options)
-      $(@.el).append html
+    _.each collection.models, (model)->
+
+    $(@.el).find('#matchinglist').append "<p>hogehoge </p>"
+
+class App.View.UserPageProfile extends Backbone.View
+  el: "div#detailprofile"
+
+  constructor: (attrs, options)->
+    super
+    _.bindAll @, "render"
+    @.model.bind 'change', @.render
+
+  render: (model)->
+    console.log 'profile render'
+    user = model.get('person')
+    gender = if user.profile.gender is 'male' then "男性" else "女性"
+    b = new Date(user.profile.birthday)
+    attributes =
+      image_source: user.profile_image_urls[0]
+      name: user.name
+      gender_birthday: "#{gender} #{user.profile.age}歳　#{b.getFullYear()}年#{b.getMonth()-1}月#{b.getDay()}日生まれ"
+      follower: user.follower
+      profile: user.profile
+    @.el = window.JST['userpage/profile'](attributes)
+    $('div#detailprofile').append @.el
 
 class App.View.UserPageMatchingList extends Backbone.View
-  el: "div.userpage-main"
+  el: "div#matchinglist"
 
-  constructor: (attrs)->
+  constructor: (attrs, option)->
+    super
+    @.collection = new App.Collection.MatchingList
+      userid: attrs.id
+
+    _.bindAll @, "appendItem", "appendAllItem"
+    @.collection.bind 'add', @.appendItem
+    @.collection.bind 'reset', @.appendAllItem
+
+    @.collection.fetch()
+
+  appendItem: (model)->
+    if model.get('isSystemMatching')
+      ul = $("div.system ul")
+    else
+      ul = $("div.supporter ul")
+    attributes =
+      id: model.get('user').id
+      source: model.get('user').profile_image_urls[0]
+    li = window.JST['userpage/matching-thumbnail'](attributes)
+    ul.append li
+
+  appendAllItem: (collection)->
+    _.each collection.models, @.appendItem
+
+class App.View.UserPageLikeList extends Backbone.View
+  el: "div#likelist"
+
+  constructor: (attrs, options)->
     super
 
-  render: ->
-    $(@.el).empty()
-    html = window.JST['userpage/matchign-list']()
-    $(@.el).html(html)
+    @.collection = new App.Collection.LikeList
+      userid: attrs.id
+
+    _.bindAll @, "appendItem", "appendAllItem"
+    @.collection.bind 'add', @.appendItem
+    @.collection.bind 'reset', @.appendAllItem
+
+    @.collection.fetch()
+
+  appendItem: (model)->
+    console.log model
+
+  appendAllItem: (collection)->
+    console.log 'likelist'
+    console.log collection
+    _.each collection.models, @.appendItem
+
+class App.View.UserPageSupporterTalk extends Backbone.View
+  el: "div#supportertalk"
+
+  constructor: ->
+    super
+
+
+# class App.View.UserPage extends Backbone.View
+#   el: "div#userpage"
+
+#   events:
+#     "click button.close": "close"
+#     "click div#userpage-sidebar li": "changeUser"
+#     "click button.matching-list": "changeMatchigListView"
+
+#   constructor: (attrs)->
+#     _.bindAll @, "appendAllItem"
+#     @.target = attrs.target
+#     # ここのCollectionを、生成元から割り当てるようにする
+#     @.collection = new App.Collection.MatchingList
+#       userid: App.User.id
+#     @.collection.bind 'reset', @.appendAllItem
+#     @.collection.fetch()
+
+#   render: ()=>
+#     html = window.JST['userpage/modal']({isSupporter: true})
+#     if $('body').find("div#userpage").length > 0
+#       console.log 'already exist'
+#     else
+#       $('body').append html
+#     $("#userpage").modal()
+
+#   close: ()->
+#     console.log 'close'
+#     $('body').remove("#userpage")
+
+#   changeUser: (e)=>
+#     $('ul.userpage-sidebar-ul').find('li').each ()->
+#       if $(@).hasClass('active')
+#         $(@).removeClass 'active'
+#     $(e.currentTarget).addClass 'active'
+#     @.target = e.currentTarget.id
+#     @.isSupporter = false
+#     user = _.find @.collection.models, (model)->
+#       return model.id is e.currentTarget.id
+#     console.log 'candidate'
+#     console.log App.User.get('person')
+#     if ( _.find App.User.get('person').following, (f)=>
+#           return f.id is @.target)
+#       $(@.el).find('div.supporter-menu').show(0)
+#     else
+#       $(@.el).find('div.supporter-menu').hide(0)
+#     name = user.get('user').name
+#     gender = if user.get('user').profile.gender is 'male' then "男性" else "女性"
+#     age = user.get('user').profile.age
+#     birthday = new Date(user.get('user').profile.birthday)
+#     $(@.el).find('div.profile h4').html(name)
+#     $(@.el).find('div.profile h5').html("#{gender}　#{age}歳　#{birthday.getFullYear()}年#{birthday.getMonth()+1}月#{birthday.getDay()}日生まれ")
+#     $(@.el).find('div.profile img.profile-image').attr 'src', user.get('user').profile_image_urls[0]
+#     @.setFollowers(user)
+#     @.setDetailProfile(user.get('user').profile)
+
+#   setDetailProfile: (profile)->
+#     $(@.el).find('table.table tbody').html window.JST['userpage/detailProfile'](profile);
+
+#   setFollowers: (user)->
+#     id = user.get('user').id
+#     followers = new App.View.UserPageFollowerList
+#       id: id
+#     # followers.fetch()
+#     # ここでBindさせたりする。
+#     # めんどくさいから朝起きたらやる
+#     # console.log followers
+#     # _.each followers.models, (follower)->
+#     #   console.log follower.get('name')
+
+#   setFollowerMessage: ()->
+#     console.log '応援団メッセージ'
+
+#   changeMatchigListView: (e)->
+#     console.log 'matching list view'
+#     matchingListView = new App.View.UserPageMatchingList()
+#     matchingListView.render()
+
+#   # 2カラムにして、応援団メッセージと一覧を統合しても良いかも。
+#   # メッセージのある人は応援団一覧でも上位に持ってくる。
+#   #
+
+#   appendItem: (model)->
+#     options =
+#       source: model.get('user').profile_image_urls[0]
+#       name: model.get('user').name
+#       id: model.get('user').id
+#     li = window.JST['userpage/footerUser'](options)
+#     $(@.el).find('ul.userpage-sidebar-ul').append li
+
+#   appendAllItem: (collection)->
+#     $(@.el).find('ul.userpage-sidebar-ul').empty()
+#     _.each collection.models, (model)=>
+#       @.appendItem model
+#     _changeUser = @.changeUser
+#     $(@.el).find('ul.userpage-sidebar-ul li').each (num)->
+#       $(@).bind 'click', _changeUser
+#     $(@.el).find("li##{@.target}").click()
+
+# class App.View.UserPageFollowerList extends Backbone.View
+#   el: "ul.follower-list"
+
+#   constructor: (attrs)->
+#     super
+#     $(@.el).empty()
+#     _.bindAll @, "render", "getMessages"
+#     # ここのモデルを、SupporterMessageに変更する
+#     @.messages = new App.Model.SupporterMessage
+#       userid: attrs.id
+#     @.followers = new App.Collection.Followers
+#       id: attrs.id
+#     @.followers.bind 'reset', @.render
+#     @.messages.bind 'change', @.getMessages
+#     @.messages.fetch()
+
+#   getMessages: (model)->
+#     @.messages = []
+#     _.each model.attributes, (message, num)=>
+#       @.messages[num] =
+#         id: message.supporter
+#         text: message.message
+#     @.followers.fetch()
+
+#   render: (collection)->
+#     console.log collection
+#     _.each collection.models, (model)=>
+#       message = _.find @.messages, (message)->
+#         return message.id is model.get('_id')
+#       options =
+#         facebook_url: "https://facebook.com/#{model.get('facebook_id')}"
+#         source: "/user/#{model.get('id')}/picture"
+#         name: model.get('name')
+#         text: if message? then message.text else ""
+#       if options.text is ""
+#         html = window.JST['userpage/follower'](options)
+#       else
+#         html = window.JST['userpage/followerWithMessage'](options)
+#       $(@.el).append html
+
+# class App.View.UserPageMatchingList extends Backbone.View
+#   el: "div.userpage-main"
+
+#   constructor: (attrs)->
+#     super
+
+#   render: ->
+#     $(@.el).empty()
+#     html = window.JST['userpage/matchign-list']()
+#     $(@.el).html(html)
 
 # class App.View.UserPage extends Backbone.View
 #   el: "#main"

@@ -11,6 +11,7 @@ exports.login = (req, res)->
     res.render "login", {title: 'Ding-Dong',back: req.header "Referer"}
 
 exports.create = (req, res)->
+  console.log req.body
   User.findOne {facebook_id: req.body.userid}, (err, person)=>
     if err
       throw err
@@ -20,6 +21,7 @@ exports.create = (req, res)->
       req.session.userid = person.id
       req.session.image = person.profile_image_urls[0]
       req.session.isSupporter = person.isSupporter
+      req.session.accessToken = req.body.accessToken
       res.json
         id: person.id
         status: "ok"
@@ -41,6 +43,7 @@ exports.create = (req, res)->
       req.session.userid = user.id
       req.session.image = user.profile_image_urls
       req.session.isSupporter = true
+      req.session.accessToken = req.body.accessToken
       res.json
         status: 'new'
         id: user.id
