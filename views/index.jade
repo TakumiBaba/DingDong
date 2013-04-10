@@ -42,10 +42,11 @@ block content
       div#navigation.clearfix
         ul.nav.nav-list
           li.nav-header メニュー
-          li.like: a(href='/#/like') いいねリスト
-          li.talk: a(href='/#/talk') 応援トーク
-          li.message: a(href='/#/message') メッセージ
-          li.test: a(href="/#/invite") 応援団を増やす
+          - if (isSupporter == false)
+            li.like: a(href='/#/like') いいねリスト
+            li.talk: a(href='/#/talk') 応援トーク
+            li.message: a(href='/#/message') メッセージ
+            li.test: a(href="/#/invite") 応援団を増やす
           li.supporter: a(href='/#/supporter') あなたの婚活仲間
           li.nav-header あなたが応援している人
           li: ul.nav.nav-list.following
