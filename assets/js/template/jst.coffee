@@ -251,11 +251,11 @@ JST['userpage/page'] = _.template(
               <div class="tab-pane active" id="detailprofile"></div>
               <!-- マッチングリスト -->
               <div class="tab-pane" id="matchinglist">
-                <h3 class='title_box'>両思い中<small>"どんどんメッセージを送って会う約束をしよう！"</small></h3>
+                <h3 class='title_box'>マッチング情報<small>"ピピっと来たら、『いいね』をプッシュ！"</small></h3>
                 <div class='system info box-inner container likebox'>
                   <ul class='like-thumbnail'></ul>
                 </div>
-                <h3 class='title_box'>お相手が片思い<small>"ピピっと来たら、『いいね』をプッシュ！"</small></h3>
+                <h3 class='title_box'>応援団おすすめ情報<small>"ピピっと来たら、『いいね』をプッシュ！"</small></h3>
                 <div class='supporter info box-inner container likebox'>
                   <ul class='like-thumbnail'></ul>
                 </div>
@@ -270,13 +270,16 @@ JST['userpage/page'] = _.template(
                 <div class='your-like info box-inner container likebox'>
                   <ul class='like-thumbnail'></ul>
                 </div>
-                <h3 class='title_box'>自分が片思い</h3>
+                <h3 class='title_box'><%= name %>さんが片思い</h3>
                 <div class='my-like info box-inner  container likebox'>
                   <ul class='like-thumbnail'></ul>
                 </div>
               </div>
               <!-- 応援団トーク -->
-              <div class="tab-pane" id="supportertalk"></div>
+              <div class="tab-pane" id="supportertalk">
+                <ul class='talk_list'>
+                </ul>
+              </div>
             </div>
           </div>
         </div>

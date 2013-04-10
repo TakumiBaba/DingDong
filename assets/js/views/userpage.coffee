@@ -8,7 +8,7 @@ class App.View.UserPage extends Backbone.View
     @.model = new App.Model.User
       id: attrs.id
 
-    _.bindAll @, "render", "setMatchingList"
+    _.bindAll @, "render"
     @.model.bind 'change', @.render
 
     profileView = new App.View.UserPageProfile
@@ -19,13 +19,10 @@ class App.View.UserPage extends Backbone.View
       id: attrs.id
     matchinglistView = new App.View.UserPageMatchingList
       id: attrs.id
-
+    supportertalkView = new App.View.UserPageSupporterTalk
+      id: attrs.id
 
     @.model.fetch()
-
-    @.matchinglist = new App.Collection.MatchingList
-      userid: @.model.id
-    @.matchinglist.bind 'reset', @.setMatchingList
 
   render: (model)->
     console.log 'render'
@@ -41,13 +38,6 @@ class App.View.UserPage extends Backbone.View
     html = window.JST['userpage/page'](options)
     $(@.el).empty()
     $(@.el).html html
-    @.matchinglist.fetch()
-
-  setMatchingList: (collection)->
-    console.log collection
-    _.each collection.models, (model)->
-
-    $(@.el).find('#matchinglist').append "<p>hogehoge </p>"
 
 class App.View.UserPageProfile extends Backbone.View
   el: "div#detailprofile"
@@ -116,6 +106,25 @@ class App.View.UserPageLikeList extends Backbone.View
 
   appendItem: (model)->
     console.log model
+    state = model.get('state')
+    user  = model.get('user')
+    if state is 1
+      ul = $('div.my-like ul')
+    else if state is 2
+      ul = $('div.your-like ul')
+    else if state is 3
+      ul = $('div.each-like ul')
+    else
+      ul = ""
+    attributes =
+      id: user.id
+      source: user.profile_image_urls[0]
+      name: user.name
+      state: state
+      text: "hoge"
+    li = window.JST['like/thumbnail'](attributes)
+    console.log ul
+    ul.append li
 
   appendAllItem: (collection)->
     console.log 'likelist'
@@ -125,8 +134,25 @@ class App.View.UserPageLikeList extends Backbone.View
 class App.View.UserPageSupporterTalk extends Backbone.View
   el: "div#supportertalk"
 
-  constructor: ->
+  constructor: (attrs, options)->
     super
+    @.collection = new App.Collection.TalkList
+      userid: attrs.id
+
+    _.bindAll @, "appendItem", "appendAllItem"
+    @.collection.bind 'add', @.appendItem
+    @.collection.bind 'reset', @.appendAllItem
+
+    @.collection.fetch()
+
+  appendItem: (model)->
+    console.log model
+    talk = new App.View.Talk
+      model: model
+    $("div#supportertalk ul.talk_list").append talk.el
+
+  appendAllItem: (collection)->
+    _.each collection.models, @.appendItem
 
 
 # class App.View.UserPage extends Backbone.View

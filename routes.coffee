@@ -26,23 +26,15 @@ exports.setup = (app)->
           isSupporter: person.isSupporter
           isFirstLogin: isFirstLogin
         }
-        # if isFirstLogin
-        #   person.isFirstLogin = false
-          # person.save (err)->
-          #   if err
-          #     throw err
 
   app.post '/', (req, res)->
     if req.session.userid? is false
       res.redirect '/login'
     else
-      User.findOne({id: "b08b809483972111e976e85e77ac7527add62ad3"}).exec (err, person)->
+      User.findOne({id: req.session.userid}).exec (err, person)->
         if err
           throw err
         else
-          req.session.access_token = req.body.access_token
-          console.log 'req.body!!!!'
-          console.log req.body
           res.render 'index', {
             title: "Ding Dong"
             profile_image: person.profile_image_urls[0]
