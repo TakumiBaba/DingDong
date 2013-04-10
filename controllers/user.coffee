@@ -85,7 +85,7 @@ exports.fetchLike = (req, res)->
 
 exports.fetch_talk = (req, res)->
   id = req.params.id
-  User.findOne({id: id}).populate('talks.user').populate('talks.candidate').populate('talks.comments').exec (err, person)->
+  User.findOne({id: id}).populate('talks.user talks.candidate talks.comments').exec (err, person)->
     if err
       throw err
     else

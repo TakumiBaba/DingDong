@@ -28,20 +28,23 @@ CommentSchema = new Schema
 
 TalkSchema = new Schema
   user:
-    type: ObjectId, ref: "User"
+    type: ObjectId
+    ref: "User"
   created_at:
     type: Date
     default: Date.now
   comments:
     type: [CommentSchema]
   candidate:
-    type: ObjectId, ref: "User"
+    type: ObjectId
+    ref: "User"
 
 CandidateSchema = new Schema
   id:
     type: String
   user:
-    type: ObjectId, ref: "User"
+    type: ObjectId
+    ref: "User"
   created_at:
     type: Date
     default: Date.now
